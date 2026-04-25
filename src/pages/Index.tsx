@@ -1,16 +1,66 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Link } from "react-router-dom";
+import { Stamp } from "@/components/Stamp";
+import { PillButton } from "@/components/PillButton";
+import { LiveDot } from "@/components/LiveDot";
+import illusCityScene from "@/assets/illus-city-scene.webp";
+import illusAvatars from "@/assets/illus-avatars.webp";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+export default function Index() {
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="dark min-h-screen bg-ink text-cream">
+      <div className="mx-auto max-w-md min-h-screen p-5 pt-safe pb-12 relative">
+        <header className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Stamp icon="ph-fill ph-wallet" tone="bg-lime text-ink" size="sm" />
+            <span className="font-display text-2xl leading-none">City Wallet</span>
+          </div>
+          <LiveDot label="HACKATHON" />
+        </header>
+
+        <section className="mt-10">
+          <div className="font-mono text-[11px] tracking-widest uppercase opacity-60">DSV Gruppe · 24h</div>
+          <h1 className="font-display text-[56px] leading-[0.92] text-balance mt-2">
+            The corner café gets <span className="text-lime">algorithmic</span> too.
+          </h1>
+          <p className="opacity-80 mt-4 max-w-[34ch]">
+            A merchant types a goal in plain English. Our AI turns it into live, context-aware offers that reach nearby customers in seconds.
+          </p>
+        </section>
+
+        <section className="mt-8 rounded-[28px] overflow-hidden bg-cream-warm text-ink p-5 grain relative">
+          <img src={illusCityScene} alt="" className="w-full mix-blend-multiply" />
+          <div className="font-mono text-[11px] tracking-widest uppercase opacity-60 mt-2">Two sides, one wallet</div>
+          <p className="font-display italic text-2xl mt-1 leading-tight">Built for the merchant. Loved by the city.</p>
+        </section>
+
+        <section className="mt-6 grid grid-cols-2 gap-3">
+          <Link to="/merchant/watch-house" className="rounded-2xl bg-lime text-ink p-5 grain relative">
+            <i className="ph-fill ph-storefront text-2xl" />
+            <div className="font-display text-3xl leading-none mt-3">Merchant</div>
+            <div className="font-mono text-[11px] tracking-widest uppercase mt-1 opacity-70">command deck →</div>
+          </Link>
+          <Link to="/wallet" className="rounded-2xl bg-tomato text-cream p-5 grain relative">
+            <i className="ph-fill ph-wallet text-2xl" />
+            <div className="font-display text-3xl leading-none mt-3">Wallet</div>
+            <div className="font-mono text-[11px] tracking-widest uppercase mt-1 opacity-80">customer feed →</div>
+          </Link>
+        </section>
+
+        <section className="mt-6 rounded-[24px] bg-ink-2 border border-cream/10 p-5 flex items-center justify-between gap-4">
+          <img src={illusAvatars} alt="" className="h-12 invert opacity-90" />
+          <Link to="/demo" className="font-mono text-[11px] tracking-widest uppercase text-lime">
+            demo controls →
+          </Link>
+        </section>
+
+        <footer className="mt-10 text-center">
+          <PillButton variant="lime">
+            <Link to="/merchant/watch-house" className="flex items-center gap-2">
+              <i className="ph-fill ph-play" /> Start the demo
+            </Link>
+          </PillButton>
+        </footer>
+      </div>
     </div>
   );
-};
-
-const Index = PlaceholderIndex;
-
-export default Index;
+}

@@ -26,6 +26,16 @@ const PRESETS = [
   { label: "Match the weather", icon: "ph-cloud-rain", text: "When it rains, push hot drinks to anyone within 400m" },
 ];
 
+type InventoryItem = { id: string; name: string; icon: string; stock: number; tag: "hot" | "cold" | "bake" | "savoury" };
+const INVENTORY: InventoryItem[] = [
+  { id: "flat-white", name: "Flat White", icon: "ph-coffee", stock: 999, tag: "hot" },
+  { id: "iced-latte", name: "Iced Latte", icon: "ph-cup", stock: 24, tag: "cold" },
+  { id: "croissant", name: "Croissant", icon: "ph-cookie", stock: 8, tag: "bake" },
+  { id: "almond-pastry", name: "Almond Pastry", icon: "ph-cookie", stock: 12, tag: "bake" },
+  { id: "banana-bread", name: "Banana Bread", icon: "ph-bread", stock: 5, tag: "bake" },
+  { id: "toastie", name: "Ham Toastie", icon: "ph-hamburger", stock: 6, tag: "savoury" },
+];
+
 export default function MerchantDashboard() {
   const { id = "watch-house" } = useParams();
   const [merchant, setMerchant] = useState<any>(null);

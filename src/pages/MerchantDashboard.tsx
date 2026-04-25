@@ -143,6 +143,7 @@ export default function MerchantDashboard() {
       });
       if (!handleAiResponse(data, error)) return;
       setParsed(data?.parsed);
+      setHasRule(true);
       generatePreview();
     } catch (e) {
       console.error(e);
@@ -153,17 +154,37 @@ export default function MerchantDashboard() {
 
   async function generatePreview() {
     if (!merchant?.id) return;
+    setPreviewLoading(true);
     try {
+      const itemNames = INVENTORY.filter((i) => selectedItems.includes(i.id)).map((i) => i.name);
       const { data, error } = await supabase.functions.invoke("generate-offer", {
-        body: { user_session_id: `merchant-preview-${merchant.id}`, lat: merchant.lat, lng: merchant.lng, force_merchant_id: merchant.id },
+        body: {
+          user_session_id: `merchant-preview-${merchant.id}`,
+          lat: merchant.lat,
+          lng: merchant.lng,
+          force_merchant_id: merchant.id,
+          discount_min: discountRange[0],
+          discount_max: discountRange[1],
+          inventory_items: itemNames,
+        },
       });
       if (!handleAiResponse(data, error, { silent: true })) return;
       const first = data?.offers?.[0];
       if (first) setPreviewOffer({ ...first, merchant });
     } catch (e) {
       console.error(e);
+    } finally {
+      setPreviewLoading(false);
     }
   }
+
+  // Auto-regenerate preview when discount or selected items change (after initial rule exists)
+  useEffect(() => {
+    if (!hasRule || !merchant?.id) return;
+    const t = setTimeout(() => generatePreview(), 600);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [discountRange[0], discountRange[1], selectedItems.join(","), hasRule]);
 
   async function fireSuggested() {
     if (!insight || !merchant?.id) return;

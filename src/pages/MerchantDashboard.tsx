@@ -47,6 +47,8 @@ export default function MerchantDashboard() {
   const [insightLoading, setInsightLoading] = useState(false);
   const [stats, setStats] = useState({ liveOffers: 0, redemptions: 0, recoveredPence: 0 });
   const [previewOffer, setPreviewOffer] = useState<OfferCardData | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [hasRule, setHasRule] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [aiPicking, setAiPicking] = useState(false);
 

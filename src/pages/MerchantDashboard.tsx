@@ -254,24 +254,40 @@ export default function MerchantDashboard() {
           </section>
         )}
 
-        {/* Presets */}
-        <section className="mt-7">
-          <div className="font-mono text-[11px] tracking-widest uppercase opacity-70 mb-2">Or pick a preset</div>
-          <div className="grid grid-cols-2 gap-3">
-            {PRESETS.map((p) => (
+        {/* Live preview — promoted to hero, sits right under the translation */}
+        <section className="mt-6">
+          <div className="flex items-center justify-between mb-2">
+            <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">What customers see</div>
+            {hasRule && (
               <button
-                key={p.label}
-                onClick={() => setGoalText(p.text)}
-                className="rounded-2xl bg-ink-2 border border-cream/10 p-4 text-left hover:border-lime transition-colors"
+                onClick={generatePreview}
+                disabled={previewLoading}
+                className="font-mono text-[11px] tracking-widest uppercase text-lime hover:underline disabled:opacity-50 flex items-center gap-1"
               >
-                <i className={`ph-fill ${p.icon} text-xl text-lime`} aria-hidden />
-                <div className="font-display text-xl mt-2 leading-tight">{p.label}</div>
+                <i className={`ph-fill ph-arrows-clockwise ${previewLoading ? "animate-spin" : ""}`} />
+                {previewLoading ? "Regenerating…" : "Regenerate"}
               </button>
-            ))}
+            )}
           </div>
+          {previewLoading && !previewOffer ? (
+            <OfferCardSkeleton hero />
+          ) : previewOffer ? (
+            <div className={previewLoading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+              <OfferCard offer={previewOffer} hero />
+            </div>
+          ) : (
+            <div className="rounded-[24px] bg-ink-2 border border-dashed border-cream/15 p-6 min-h-[280px] flex items-center justify-center text-center">
+              <div>
+                <i className="ph ph-eye text-3xl opacity-50" />
+                <p className="font-mono text-[11px] uppercase tracking-widest mt-2 opacity-60">
+                  Translate a goal to see the live offer
+                </p>
+              </div>
+            </div>
+          )}
         </section>
 
-        {/* Inventory */}
+        {/* Tuning controls — Inventory + Discount sit right under the preview so changes feel immediate */}
         <section className="mt-7">
           <div className="flex items-center justify-between mb-2">
             <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">Inventory · pick what to push</div>
@@ -330,19 +346,21 @@ export default function MerchantDashboard() {
           <DualRange value={discountRange} onChange={setDiscountRange} min={5} max={40} />
         </section>
 
-        {/* Live preview */}
+        {/* Presets — moved below as quick-fill helpers */}
         <section className="mt-7">
-          <div className="font-mono text-[11px] tracking-widest uppercase opacity-70 mb-2">What customers see</div>
-          {previewOffer ? (
-            <OfferCard offer={previewOffer} hero />
-          ) : (
-            <div className="rounded-[24px] bg-ink-2 border border-dashed border-cream/15 p-6 min-h-[200px] flex items-center justify-center text-center">
-              <div>
-                <i className="ph ph-eye text-2xl opacity-50" />
-                <p className="font-mono text-[11px] uppercase tracking-widest mt-2 opacity-60">Translate a goal to preview the live offer</p>
-              </div>
-            </div>
-          )}
+          <div className="font-mono text-[11px] tracking-widest uppercase opacity-70 mb-2">Or pick a preset</div>
+          <div className="grid grid-cols-2 gap-3">
+            {PRESETS.map((p) => (
+              <button
+                key={p.label}
+                onClick={() => setGoalText(p.text)}
+                className="rounded-2xl bg-ink-2 border border-cream/10 p-4 text-left hover:border-lime transition-colors"
+              >
+                <i className={`ph-fill ${p.icon} text-xl text-lime`} aria-hidden />
+                <div className="font-display text-xl mt-2 leading-tight">{p.label}</div>
+              </button>
+            ))}
+          </div>
         </section>
 
         {/* Live stats */}

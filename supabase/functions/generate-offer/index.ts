@@ -112,8 +112,6 @@ Deno.serve(async (req) => {
 
     const created: any[] = [];
 
-    // Effective discount window — caller can narrow within rule bounds
-    const effMin = Math.max(r_minOf(rules), discount_min ?? 0) || undefined;
     for (const item of scored) {
       const r = item.rule;
       const m = r.merchants;

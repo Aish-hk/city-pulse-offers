@@ -139,10 +139,18 @@ Context: ${ctx.time_of_day} on day ${ctx.day_of_week}, weather ${ctx.weather}, $
           const t = await aiResp.text();
           console.error("ai gateway error", aiResp.status, t);
           if (aiResp.status === 429 || aiResp.status === 402) {
-            return new Response(JSON.stringify({ error: aiResp.status === 429 ? "rate_limited" : "credits_required" }), {
-              status: aiResp.status,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            });
+            // Return 200 + structured error so client handles it gracefully.
+            return new Response(
+              JSON.stringify({
+                error: aiResp.status === 429 ? "rate_limited" : "credits_required",
+                message: aiResp.status === 402
+                  ? "Your Lovable AI workspace is out of credits. Top up in Settings → Workspace → Usage."
+                  : "Too many requests — try again in a moment.",
+                offers: created,
+                context: ctx,
+              }),
+              { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
           }
           continue;
         }

@@ -42,7 +42,9 @@ const INVENTORY: InventoryItem[] = [
 
 export default function MerchantDashboard() {
   const { id = "watch-house" } = useParams();
+  const navigate = useNavigate();
   const [merchant, setMerchant] = useState<any>(null);
+  const [previewFlash, setPreviewFlash] = useState(false);
   const [goalText, setGoalText] = useState("");
   const [parsing, setParsing] = useState(false);
   const [parsed, setParsed] = useState<any>(null);

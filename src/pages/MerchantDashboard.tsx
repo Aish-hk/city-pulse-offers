@@ -226,17 +226,30 @@ export default function MerchantDashboard() {
           <LiveDot label="LIVE" />
         </header>
 
-        {/* Goal input — hero */}
-        <section className="mt-7">
-          <label className="font-mono text-[11px] tracking-widest uppercase opacity-70">The ask</label>
+        {/* ───────── STEP 01 — GOAL ───────── */}
+        <section className="mt-8">
+          <StepHeader number={1} label="Tell us your goal" state={parsed ? "done" : "active"} />
           <textarea
             value={goalText}
             onChange={(e) => setGoalText(e.target.value)}
             placeholder="Tell me what you want to sell more of…"
             rows={3}
-            className="w-full mt-2 bg-transparent border-b border-cream/20 focus:border-lime outline-none font-display italic text-3xl leading-tight resize-none placeholder:opacity-40"
+            className="w-full mt-3 bg-transparent border-b border-cream/20 focus:border-lime outline-none font-display italic text-3xl leading-tight resize-none placeholder:opacity-40"
           />
-          <div className="mt-3 flex items-center justify-between">
+          {/* Preset chips folded INTO the goal input */}
+          <div className="mt-3 flex flex-wrap gap-2">
+            {PRESETS.map((p) => (
+              <button
+                key={p.label}
+                onClick={() => setGoalText(p.text)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-ink-2 border border-cream/10 px-3 py-1.5 text-[12px] hover:border-lime transition-colors"
+              >
+                <i className={`ph-fill ${p.icon} text-sm text-lime`} aria-hidden />
+                {p.label}
+              </button>
+            ))}
+          </div>
+          <div className="mt-4 flex items-center justify-between">
             <span className="font-mono text-[11px] opacity-50">Plain English. We handle the rest.</span>
             <PillButton variant="lime" onClick={translateGoal} disabled={parsing || !goalText.trim()}>
               <i className="ph-fill ph-arrow-right" /> {parsing ? "Translating…" : "Translate"}
@@ -244,150 +257,186 @@ export default function MerchantDashboard() {
           </div>
         </section>
 
-        {/* Translation panel */}
-        {(parsing || parsed) && (
-          <section className="mt-6 grid grid-cols-1 gap-3 animate-fade-up">
-            <div className="rounded-[20px] bg-cream-warm text-ink p-4">
-              <div className="font-mono text-[11px] tracking-widest uppercase opacity-60">We heard you</div>
-              <p className="font-display italic text-xl mt-2 leading-snug">
-                {parsing ? "Listening…" : parsed?.human_summary || "—"}
-              </p>
-            </div>
-            <div className="rounded-[20px] bg-ink-2 border border-cream/10 p-4 font-mono text-[12px] leading-relaxed text-cream/80">
-              <div className="text-[11px] tracking-widest uppercase opacity-60 mb-2">Parsed rule</div>
-              {parsing ? (
-                <span className="opacity-60">Compiling JSON…</span>
-              ) : parsed ? (
-                <JsonReveal obj={parsed} />
-              ) : null}
-            </div>
-          </section>
-        )}
+        {/* ───────── STEP 02 — RULE READBACK ───────── */}
+        <section
+          className={`mt-10 transition-opacity ${parsing || parsed ? "opacity-100" : "opacity-30 pointer-events-none"}`}
+        >
+          <StepHeader number={2} label="We heard you" state={parsed ? "done" : parsing ? "active" : "idle"} />
+          <div className="mt-3 rounded-[20px] bg-cream-warm text-ink p-5 grain">
+            {parsing && !parsed ? (
+              <p className="font-display italic text-xl leading-snug opacity-70">Listening…</p>
+            ) : parsed ? (
+              <>
+                <p className="font-display italic text-2xl leading-snug">
+                  "{parsed.human_summary || "Here's how I read that."}"
+                </p>
+                <div className="divider-dashed-ink my-4" />
+                <RuleChipStrip
+                  chips={ruleToChips(
+                    {
+                      ...parsed,
+                      suggested_min_discount: discountRange[0],
+                      suggested_max_discount: discountRange[1],
+                    },
+                    INVENTORY.filter((i) => selectedItems.includes(i.id)).map((i) => i.name)
+                  )}
+                />
+              </>
+            ) : (
+              <p className="text-sm opacity-60">Translate a goal to see how we'll run it.</p>
+            )}
+          </div>
+        </section>
 
-        {/* Live preview — promoted to hero, sits right under the translation */}
-        <section className="mt-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">What customers see</div>
-            {hasRule && (
+        {/* ───────── STEP 03 — TUNE ───────── */}
+        <section
+          className={`mt-10 transition-opacity ${parsed ? "opacity-100" : "opacity-30 pointer-events-none"}`}
+        >
+          <StepHeader
+            number={3}
+            label="Tune the offer"
+            hint="Changes apply live below"
+            state={parsed ? "active" : "idle"}
+          />
+
+          {/* Inventory */}
+          <div className="mt-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">Inventory</div>
+              <button
+                onClick={aiSuggestItems}
+                disabled={aiPicking}
+                className="font-mono text-[11px] tracking-widest uppercase text-lime hover:underline disabled:opacity-50 flex items-center gap-1"
+              >
+                <i className={`ph-fill ph-sparkle ${aiPicking ? "animate-pulse" : ""}`} />
+                {aiPicking ? "AI picking…" : "AI suggest"}
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {INVENTORY.map((item) => {
+                const selected = selectedItems.includes(item.id);
+                const low = item.stock <= 8;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => toggleItem(item.id)}
+                    className={`relative rounded-2xl border p-3 text-left transition-all ${
+                      selected
+                        ? "bg-lime text-ink border-lime"
+                        : "bg-ink-2 border-cream/10 text-cream hover:border-cream/30"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <i className={`ph-fill ${item.icon} text-lg`} aria-hidden />
+                      {low && (
+                        <span
+                          className={`font-mono text-[9px] tracking-widest uppercase px-1.5 py-0.5 rounded ${
+                            selected ? "bg-ink/10 text-ink" : "bg-tomato/20 text-tomato"
+                          }`}
+                        >
+                          {item.stock} left
+                        </span>
+                      )}
+                    </div>
+                    <div className="font-display text-base mt-1.5 leading-tight">{item.name}</div>
+                    {selected && (
+                      <i className="ph-fill ph-check-circle absolute top-2 right-2 text-ink" aria-hidden />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Discount slider */}
+          <div className="mt-5">
+            <div className="flex items-center justify-between">
+              <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">Discount range</div>
+              <div className="font-mono text-[12px] text-lime">
+                {discountRange[0]}–{discountRange[1]}%
+              </div>
+            </div>
+            <DualRange value={discountRange} onChange={setDiscountRange} min={5} max={40} />
+          </div>
+
+          {/* Live tether */}
+          {parsed && (
+            <div className="mt-4 flex items-center gap-2 font-mono text-[11px] opacity-50">
+              <i className={`ph ph-arrow-down ${previewLoading ? "animate-bounce text-lime opacity-100" : ""}`} />
+              {previewLoading ? "Updating preview…" : "Updates the preview below"}
+            </div>
+          )}
+        </section>
+
+        {/* ───────── STEP 04 — PREVIEW ───────── */}
+        <section
+          className={`mt-10 transition-opacity ${parsed ? "opacity-100" : "opacity-30 pointer-events-none"}`}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <StepHeader number={4} label="What customers see" state={previewOffer ? "done" : "idle"} />
+            {parsed && (
               <button
                 onClick={generatePreview}
                 disabled={previewLoading}
-                className="font-mono text-[11px] tracking-widest uppercase text-lime hover:underline disabled:opacity-50 flex items-center gap-1"
+                className="font-mono text-[11px] tracking-widest uppercase text-lime hover:underline disabled:opacity-50 flex items-center gap-1 shrink-0"
               >
                 <i className={`ph-fill ph-arrows-clockwise ${previewLoading ? "animate-spin" : ""}`} />
-                {previewLoading ? "Regenerating…" : "Regenerate"}
+                {previewLoading ? "…" : "Regenerate"}
               </button>
             )}
           </div>
-          {previewLoading && !previewOffer ? (
-            <OfferCardSkeleton hero />
-          ) : previewOffer ? (
-            <div className={previewLoading ? "opacity-60 transition-opacity" : "transition-opacity"}>
-              <OfferCard offer={previewOffer} hero />
-            </div>
-          ) : (
-            <div className="rounded-[24px] bg-ink-2 border border-dashed border-cream/15 p-6 min-h-[280px] flex items-center justify-center text-center">
-              <div>
-                <i className="ph ph-eye text-3xl opacity-50" />
-                <p className="font-mono text-[11px] uppercase tracking-widest mt-2 opacity-60">
-                  Translate a goal to see the live offer
-                </p>
+          <div
+            className={`rounded-[28px] transition-all ${
+              previewFlash ? "ring-2 ring-lime ring-offset-4 ring-offset-ink" : ""
+            }`}
+          >
+            {previewLoading && !previewOffer ? (
+              <OfferCardSkeleton hero />
+            ) : previewOffer ? (
+              <div className={previewLoading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+                <OfferCard offer={previewOffer} hero />
               </div>
-            </div>
-          )}
-        </section>
-
-        {/* Tuning controls — Inventory + Discount sit right under the preview so changes feel immediate */}
-        <section className="mt-7">
-          <div className="flex items-center justify-between mb-2">
-            <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">Inventory · pick what to push</div>
-            <button
-              onClick={aiSuggestItems}
-              disabled={aiPicking}
-              className="font-mono text-[11px] tracking-widest uppercase text-lime hover:underline disabled:opacity-50 flex items-center gap-1"
-            >
-              <i className={`ph-fill ph-sparkle ${aiPicking ? "animate-pulse" : ""}`} />
-              {aiPicking ? "AI picking…" : "AI suggest"}
-            </button>
+            ) : (
+              <div className="rounded-[28px] bg-ink-2 border border-dashed border-cream/15 p-8 min-h-[280px] flex items-center justify-center text-center">
+                <div>
+                  <i className="ph ph-eye text-3xl opacity-50" />
+                  <p className="font-mono text-[11px] uppercase tracking-widest mt-2 opacity-60">
+                    Translate a goal to see the live offer
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            {INVENTORY.map((item) => {
-              const selected = selectedItems.includes(item.id);
-              const low = item.stock <= 8;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => toggleItem(item.id)}
-                  className={`relative rounded-2xl border p-3 text-left transition-all ${
-                    selected
-                      ? "bg-lime text-ink border-lime"
-                      : "bg-ink-2 border-cream/10 text-cream hover:border-cream/30"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <i className={`ph-fill ${item.icon} text-lg`} aria-hidden />
-                    {low && (
-                      <span className={`font-mono text-[9px] tracking-widest uppercase px-1.5 py-0.5 rounded ${selected ? "bg-ink/10 text-ink" : "bg-tomato/20 text-tomato"}`}>
-                        {item.stock} left
-                      </span>
-                    )}
-                  </div>
-                  <div className="font-display text-base mt-1.5 leading-tight">{item.name}</div>
-                  {selected && (
-                    <i className="ph-fill ph-check-circle absolute top-2 right-2 text-ink" aria-hidden />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-          {selectedItems.length > 0 && (
-            <div className="font-mono text-[11px] opacity-60 mt-2">
-              {selectedItems.length} item{selectedItems.length > 1 ? "s" : ""} folded into the offer
-            </div>
-          )}
-        </section>
-
-        {/* Discount slider */}
-        <section className="mt-7">
-          <div className="flex items-center justify-between">
-            <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">Discount range</div>
-            <div className="font-mono text-[12px] text-lime">{discountRange[0]}–{discountRange[1]}%</div>
-          </div>
-          <DualRange value={discountRange} onChange={setDiscountRange} min={5} max={40} />
-        </section>
-
-        {/* Presets — moved below as quick-fill helpers */}
-        <section className="mt-7">
-          <div className="font-mono text-[11px] tracking-widest uppercase opacity-70 mb-2">Or pick a preset</div>
-          <div className="grid grid-cols-2 gap-3">
-            {PRESETS.map((p) => (
-              <button
-                key={p.label}
-                onClick={() => setGoalText(p.text)}
-                className="rounded-2xl bg-ink-2 border border-cream/10 p-4 text-left hover:border-lime transition-colors"
+          {previewOffer && (
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <span className="font-mono text-[11px] opacity-60">Already pushed to the wallet feed.</span>
+              <PillButton
+                variant="lime"
+                onClick={() => {
+                  toast.success("Offer is live in the wallet", { description: "See it as a customer" });
+                  navigate("/wallet");
+                }}
               >
-                <i className={`ph-fill ${p.icon} text-xl text-lime`} aria-hidden />
-                <div className="font-display text-xl mt-2 leading-tight">{p.label}</div>
-              </button>
-            ))}
-          </div>
+                <i className="ph-fill ph-paper-plane-tilt" /> See in wallet
+              </PillButton>
+            </div>
+          )}
         </section>
 
-        {/* Live stats */}
-        <section className="mt-8 grid grid-cols-3 gap-3">
+        {/* ───────── FOOTER · stats / insight / crew ───────── */}
+        <section className="mt-12 grid grid-cols-3 gap-3">
           <Stat label="Live" value={stats.liveOffers} />
           <Stat label="Redeemed" value={stats.redemptions} />
           <Stat label="Recovered" value={`£${(stats.recoveredPence / 100).toFixed(0)}`} />
         </section>
 
-        {/* Insight card */}
         <section className="mt-8">
-          <div
-            className="rounded-[24px] bg-cream-warm text-ink p-5 rotate-tilt grain relative"
-          >
+          <div className="rounded-[24px] bg-cream-warm text-ink p-5 rotate-tilt grain relative">
             <div className="flex items-center justify-between">
               <div className="font-mono text-[11px] tracking-widest uppercase opacity-60">Why it's quiet right now</div>
-              <button onClick={refreshInsight} className="text-[11px] font-mono underline opacity-70">refresh</button>
+              <button onClick={refreshInsight} className="text-[11px] font-mono underline opacity-70">
+                refresh
+              </button>
             </div>
             {insightLoading && !insight ? (
               <p className="font-display italic text-2xl mt-2">Diagnosing your block…</p>
@@ -410,7 +459,6 @@ export default function MerchantDashboard() {
           </div>
         </section>
 
-        {/* Crew strip */}
         <section className="mt-8 rounded-[24px] overflow-hidden bg-ink-2 border border-cream/10 p-5">
           <div className="flex items-center gap-3">
             <img src={illusCityLife} alt="" className="h-16 w-16 rounded-xl object-cover invert opacity-80" />

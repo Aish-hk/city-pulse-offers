@@ -1,1 +1,19 @@
 project_id = "sxmrdbkicxrffsppdlod"
+
+[functions.get-context]
+verify_jwt = false
+
+[functions.generate-offer]
+verify_jwt = false
+
+[functions.redeem-offer]
+verify_jwt = false
+
+[functions.parse-merchant-goal]
+verify_jwt = false
+
+[functions.merchant-insights]
+verify_jwt = false
+
+[functions.ask-the-city]
+verify_jwt = false

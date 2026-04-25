@@ -56,9 +56,22 @@ Deno.serve(async (req) => {
       }),
     });
     if (!aiResp.ok) {
-      if (aiResp.status === 429) return new Response(JSON.stringify({ error: "rate_limited" }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      if (aiResp.status === 402) return new Response(JSON.stringify({ error: "credits_required" }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      throw new Error("ai gateway error");
+      if (aiResp.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "credits_required", message: "Your Lovable AI workspace is out of credits. Top up in Settings → Workspace → Usage.", picks: [] }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (aiResp.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "rate_limited", message: "Too many requests — try again in a moment.", picks: [] }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      return new Response(
+        JSON.stringify({ error: "ai_gateway_error", picks: [] }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
     const aj = await aiResp.json();
     const parsed = JSON.parse(aj.choices?.[0]?.message?.content || "{}");

@@ -248,6 +248,56 @@ export default function MerchantDashboard() {
           </div>
         </section>
 
+        {/* Inventory */}
+        <section className="mt-7">
+          <div className="flex items-center justify-between mb-2">
+            <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">Inventory · pick what to push</div>
+            <button
+              onClick={aiSuggestItems}
+              disabled={aiPicking}
+              className="font-mono text-[11px] tracking-widest uppercase text-lime hover:underline disabled:opacity-50 flex items-center gap-1"
+            >
+              <i className={`ph-fill ph-sparkle ${aiPicking ? "animate-pulse" : ""}`} />
+              {aiPicking ? "AI picking…" : "AI suggest"}
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {INVENTORY.map((item) => {
+              const selected = selectedItems.includes(item.id);
+              const low = item.stock <= 8;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => toggleItem(item.id)}
+                  className={`relative rounded-2xl border p-3 text-left transition-all ${
+                    selected
+                      ? "bg-lime text-ink border-lime"
+                      : "bg-ink-2 border-cream/10 text-cream hover:border-cream/30"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <i className={`ph-fill ${item.icon} text-lg`} aria-hidden />
+                    {low && (
+                      <span className={`font-mono text-[9px] tracking-widest uppercase px-1.5 py-0.5 rounded ${selected ? "bg-ink/10 text-ink" : "bg-tomato/20 text-tomato"}`}>
+                        {item.stock} left
+                      </span>
+                    )}
+                  </div>
+                  <div className="font-display text-base mt-1.5 leading-tight">{item.name}</div>
+                  {selected && (
+                    <i className="ph-fill ph-check-circle absolute top-2 right-2 text-ink" aria-hidden />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          {selectedItems.length > 0 && (
+            <div className="font-mono text-[11px] opacity-60 mt-2">
+              {selectedItems.length} item{selectedItems.length > 1 ? "s" : ""} folded into the offer
+            </div>
+          )}
+        </section>
+
         {/* Discount slider */}
         <section className="mt-7">
           <div className="flex items-center justify-between">

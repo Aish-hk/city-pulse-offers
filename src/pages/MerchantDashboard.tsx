@@ -176,7 +176,11 @@ export default function MerchantDashboard() {
       });
       if (!handleAiResponse(data, error, { silent: true })) return;
       const first = data?.offers?.[0];
-      if (first) setPreviewOffer({ ...first, merchant });
+      if (first) {
+        setPreviewOffer({ ...first, merchant });
+        setPreviewFlash(true);
+        setTimeout(() => setPreviewFlash(false), 700);
+      }
     } catch (e) {
       console.error(e);
     } finally {

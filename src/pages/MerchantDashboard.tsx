@@ -1,9 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Stamp } from "@/components/Stamp";
 import { LiveDot } from "@/components/LiveDot";
 import { PillButton } from "@/components/PillButton";
+import { StepHeader } from "@/components/StepHeader";
+import { RuleChipStrip } from "@/components/RuleChipStrip";
+import { ruleToChips } from "@/lib/ruleFormat";
 import { categoryIcon } from "@/lib/brand";
 import { OfferCard, OfferCardSkeleton, type OfferCardData } from "@/components/OfferCard";
 import { handleAiResponse } from "@/lib/aiErrors";

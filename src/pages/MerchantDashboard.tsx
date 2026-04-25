@@ -6,6 +6,7 @@ import { LiveDot } from "@/components/LiveDot";
 import { PillButton } from "@/components/PillButton";
 import { categoryIcon } from "@/lib/brand";
 import { OfferCard, type OfferCardData } from "@/components/OfferCard";
+import { handleAiResponse } from "@/lib/aiErrors";
 import illusAvatars from "@/assets/illus-avatars.webp";
 import illusCityLife from "@/assets/illus-city-life.jpeg";
 
@@ -85,9 +86,10 @@ export default function MerchantDashboard() {
     if (!merchant?.id) return;
     setInsightLoading(true);
     try {
-      const { data } = await supabase.functions.invoke("merchant-insights", {
+      const { data, error } = await supabase.functions.invoke("merchant-insights", {
         body: { merchant_id: merchant.id },
       });
+      if (!handleAiResponse(data, error)) return;
       if (data?.insight) setInsight(data.insight);
     } catch (e) {
       console.error("insight", e);
@@ -104,9 +106,8 @@ export default function MerchantDashboard() {
       const { data, error } = await supabase.functions.invoke("parse-merchant-goal", {
         body: { goal_text: goalText, merchant_id: merchant.id, persist: true },
       });
-      if (error) throw error;
+      if (!handleAiResponse(data, error)) return;
       setParsed(data?.parsed);
-      // Trigger an offer generation for live preview
       generatePreview();
     } catch (e) {
       console.error(e);
@@ -118,9 +119,10 @@ export default function MerchantDashboard() {
   async function generatePreview() {
     if (!merchant?.id) return;
     try {
-      const { data } = await supabase.functions.invoke("generate-offer", {
+      const { data, error } = await supabase.functions.invoke("generate-offer", {
         body: { user_session_id: `merchant-preview-${merchant.id}`, lat: merchant.lat, lng: merchant.lng, force_merchant_id: merchant.id },
       });
+      if (!handleAiResponse(data, error, { silent: true })) return;
       const first = data?.offers?.[0];
       if (first) setPreviewOffer({ ...first, merchant });
     } catch (e) {

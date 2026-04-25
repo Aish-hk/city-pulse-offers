@@ -6,6 +6,7 @@ import { OfferCard, OfferCardSkeleton, type OfferCardData } from "@/components/O
 import { PhoneShell } from "@/components/PhoneShell";
 import { PillButton } from "@/components/PillButton";
 import { toneFor } from "@/lib/brand";
+import { handleAiResponse } from "@/lib/aiErrors";
 import illusCityScene from "@/assets/illus-city-scene.webp";
 import illusBcnMap from "@/assets/illus-bcn-map.webp";
 
@@ -83,7 +84,7 @@ export default function Wallet() {
       const { data, error } = await supabase.functions.invoke("generate-offer", {
         body: { user_session_id: sessionId, lat: 51.5246, lng: -0.0784 },
       });
-      if (error) throw error;
+      if (!handleAiResponse(data, error)) return;
       if (data?.context) setCtx(data.context);
     } catch (e) {
       console.error("gen offer", e);

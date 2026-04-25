@@ -112,23 +112,31 @@ Deno.serve(async (req) => {
 
     const created: any[] = [];
 
+    // Effective discount window — caller can narrow within rule bounds
+    const effMin = Math.max(r_minOf(rules), discount_min ?? 0) || undefined;
     for (const item of scored) {
       const r = item.rule;
       const m = r.merchants;
+      const lo = Math.max(r.min_discount_pct, Number(discount_min) || r.min_discount_pct);
+      const hi = Math.min(r.max_discount_pct, Number(discount_max) || r.max_discount_pct);
+      const items = Array.isArray(inventory_items) && inventory_items.length > 0
+        ? inventory_items.join(", ")
+        : (r.inventory_tag || "general");
+
       const sys = `You are the Offer Generation Engine. Output RAW, VALID JSON ONLY. No markdown.
 Schema: { "headline": string, "body": string, "cta": string, "discount_pct": int, "urgency_reason": string, "expires_in_minutes": int }
 STRICT RULES:
-1. Math: discount_pct must be an integer strictly between ${r.min_discount_pct}% and ${r.max_discount_pct}%.
+1. Math: discount_pct must be an integer between ${lo}% and ${hi}%.
 2. Brand voice: match "${m.brand_voice}" exactly.
 3. UK English only: flat white, takeaway, queue, savoury.
-4. headline: max 8 words, punchy, editorial.
+4. headline: max 8 words, punchy, editorial. Reference the featured item(s) if specific.
 5. body: one sentence, max 18 words.
 6. urgency_reason: short, earned by context, e.g. "Wet Tuesday afternoon — pre-rush capacity."
 7. cta: 2-4 words, action-led.`;
 
       const usr = `Merchant: ${m.name} (${m.category}) on ${m.address}.
 Goal: ${r.goal_text_input || r.goal_type}.
-Inventory tag: ${r.inventory_tag || "general"}.
+Featured items: ${items}.
 Context: ${ctx.time_of_day} on day ${ctx.day_of_week}, weather ${ctx.weather}, ${ctx.temp_c}°C, ${Math.round(item.distance_m)}m from customer.`;
 
       let aiJson: any = null;
@@ -149,7 +157,6 @@ Context: ${ctx.time_of_day} on day ${ctx.day_of_week}, weather ${ctx.weather}, $
           const t = await aiResp.text();
           console.error("ai gateway error", aiResp.status, t);
           if (aiResp.status === 429 || aiResp.status === 402) {
-            // Return 200 + structured error so client handles it gracefully.
             return new Response(
               JSON.stringify({
                 error: aiResp.status === 429 ? "rate_limited" : "credits_required",
@@ -172,10 +179,7 @@ Context: ${ctx.time_of_day} on day ${ctx.day_of_week}, weather ${ctx.weather}, $
         continue;
       }
 
-      const discount = Math.max(
-        r.min_discount_pct + 1,
-        Math.min(r.max_discount_pct - 1, Number(aiJson.discount_pct) || r.min_discount_pct + 5)
-      );
+      const discount = Math.max(lo, Math.min(hi, Number(aiJson.discount_pct) || Math.round((lo + hi) / 2)));
       const expiresMins = Math.max(15, Math.min(180, Number(aiJson.expires_in_minutes) || 60));
 
       const ins = await supabase

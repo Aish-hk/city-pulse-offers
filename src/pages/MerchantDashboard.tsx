@@ -525,35 +525,3 @@ function DualRange({ value, onChange, min, max }: { value: [number, number]; onC
     </div>
   );
 }
-
-function JsonReveal({ obj }: { obj: any }) {
-  const lines = useMemo(() => JSON.stringify(obj, null, 2).split("\n"), [obj]);
-  return (
-    <pre className="whitespace-pre-wrap break-words">
-      {lines.map((line, i) => (
-        <span
-          key={i}
-          className="block animate-fade-up"
-          style={{ animationDelay: `${i * 40}ms` }}
-        >
-          {colorize(line)}
-        </span>
-      ))}
-    </pre>
-  );
-}
-
-function colorize(line: string) {
-  // Naive token coloring
-  const m = line.match(/^(\s*)("[^"]+")\s*:\s*(.*)$/);
-  if (!m) return <span className="text-cream/60">{line}</span>;
-  const [, indent, key, rest] = m;
-  return (
-    <>
-      <span>{indent}</span>
-      <span className="text-lime">{key}</span>
-      <span className="text-cream/60">: </span>
-      <span className="text-cream">{rest}</span>
-    </>
-  );
-}

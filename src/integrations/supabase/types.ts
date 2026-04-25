@@ -14,7 +14,273 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      demo_overrides: {
+        Row: {
+          id: string
+          location_override: Json | null
+          time_override: string | null
+          weather_override: string | null
+        }
+        Insert: {
+          id?: string
+          location_override?: Json | null
+          time_override?: string | null
+          weather_override?: string | null
+        }
+        Update: {
+          id?: string
+          location_override?: Json | null
+          time_override?: string | null
+          weather_override?: string | null
+        }
+        Relationships: []
+      }
+      merchant_insights: {
+        Row: {
+          context_snapshot: Json | null
+          created_at: string | null
+          diagnosis: string
+          id: string
+          merchant_id: string | null
+          suggested_action: string
+        }
+        Insert: {
+          context_snapshot?: Json | null
+          created_at?: string | null
+          diagnosis: string
+          id?: string
+          merchant_id?: string | null
+          suggested_action: string
+        }
+        Update: {
+          context_snapshot?: Json | null
+          created_at?: string | null
+          diagnosis?: string
+          id?: string
+          merchant_id?: string | null
+          suggested_action?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_insights_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      merchant_rules: {
+        Row: {
+          active_days: number[] | null
+          active_window_end: string | null
+          active_window_start: string | null
+          created_at: string | null
+          goal_text_input: string | null
+          goal_type: string
+          id: string
+          inventory_tag: string | null
+          is_active: boolean | null
+          max_discount_pct: number | null
+          merchant_id: string | null
+          min_discount_pct: number | null
+          trigger_conditions: Json | null
+        }
+        Insert: {
+          active_days?: number[] | null
+          active_window_end?: string | null
+          active_window_start?: string | null
+          created_at?: string | null
+          goal_text_input?: string | null
+          goal_type: string
+          id?: string
+          inventory_tag?: string | null
+          is_active?: boolean | null
+          max_discount_pct?: number | null
+          merchant_id?: string | null
+          min_discount_pct?: number | null
+          trigger_conditions?: Json | null
+        }
+        Update: {
+          active_days?: number[] | null
+          active_window_end?: string | null
+          active_window_start?: string | null
+          created_at?: string | null
+          goal_text_input?: string | null
+          goal_type?: string
+          id?: string
+          inventory_tag?: string | null
+          is_active?: boolean | null
+          max_discount_pct?: number | null
+          merchant_id?: string | null
+          min_discount_pct?: number | null
+          trigger_conditions?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_rules_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      merchants: {
+        Row: {
+          address: string | null
+          brand_voice: string | null
+          category: string
+          created_at: string | null
+          icon_name: string | null
+          id: string
+          lat: number
+          lng: number
+          name: string
+        }
+        Insert: {
+          address?: string | null
+          brand_voice?: string | null
+          category: string
+          created_at?: string | null
+          icon_name?: string | null
+          id?: string
+          lat: number
+          lng: number
+          name: string
+        }
+        Update: {
+          address?: string | null
+          brand_voice?: string | null
+          category?: string
+          created_at?: string | null
+          icon_name?: string | null
+          id?: string
+          lat?: number
+          lng?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      offers: {
+        Row: {
+          body: string
+          context_snapshot: Json | null
+          created_at: string | null
+          cta: string
+          discount_pct: number
+          expires_at: string
+          headline: string
+          id: string
+          merchant_id: string | null
+          relevance_score: number | null
+          rule_id: string | null
+          status: string | null
+          urgency_reason: string
+          user_session_id: string | null
+        }
+        Insert: {
+          body: string
+          context_snapshot?: Json | null
+          created_at?: string | null
+          cta: string
+          discount_pct: number
+          expires_at: string
+          headline: string
+          id?: string
+          merchant_id?: string | null
+          relevance_score?: number | null
+          rule_id?: string | null
+          status?: string | null
+          urgency_reason: string
+          user_session_id?: string | null
+        }
+        Update: {
+          body?: string
+          context_snapshot?: Json | null
+          created_at?: string | null
+          cta?: string
+          discount_pct?: number
+          expires_at?: string
+          headline?: string
+          id?: string
+          merchant_id?: string | null
+          relevance_score?: number | null
+          rule_id?: string | null
+          status?: string | null
+          urgency_reason?: string
+          user_session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offers_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offers_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "merchant_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      redemptions: {
+        Row: {
+          id: string
+          offer_id: string | null
+          redeemed_at: string | null
+          simulated_amount_pence: number | null
+          user_session_id: string | null
+        }
+        Insert: {
+          id?: string
+          offer_id?: string | null
+          redeemed_at?: string | null
+          simulated_amount_pence?: number | null
+          user_session_id?: string | null
+        }
+        Update: {
+          id?: string
+          offer_id?: string | null
+          redeemed_at?: string | null
+          simulated_amount_pence?: number | null
+          user_session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redemptions_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_sessions: {
+        Row: {
+          created_at: string | null
+          current_lat: number | null
+          current_lng: number | null
+          session_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_lat?: number | null
+          current_lng?: number | null
+          session_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_lat?: number | null
+          current_lng?: number | null
+          session_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

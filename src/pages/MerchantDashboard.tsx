@@ -5,7 +5,7 @@ import { Stamp } from "@/components/Stamp";
 import { LiveDot } from "@/components/LiveDot";
 import { PillButton } from "@/components/PillButton";
 import { categoryIcon } from "@/lib/brand";
-import { OfferCard, type OfferCardData } from "@/components/OfferCard";
+import { OfferCard, OfferCardSkeleton, type OfferCardData } from "@/components/OfferCard";
 import { handleAiResponse } from "@/lib/aiErrors";
 import illusAvatars from "@/assets/illus-avatars.webp";
 import illusCityLife from "@/assets/illus-city-life.jpeg";
@@ -47,6 +47,8 @@ export default function MerchantDashboard() {
   const [insightLoading, setInsightLoading] = useState(false);
   const [stats, setStats] = useState({ liveOffers: 0, redemptions: 0, recoveredPence: 0 });
   const [previewOffer, setPreviewOffer] = useState<OfferCardData | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [hasRule, setHasRule] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [aiPicking, setAiPicking] = useState(false);
 
@@ -141,6 +143,7 @@ export default function MerchantDashboard() {
       });
       if (!handleAiResponse(data, error)) return;
       setParsed(data?.parsed);
+      setHasRule(true);
       generatePreview();
     } catch (e) {
       console.error(e);
@@ -151,17 +154,37 @@ export default function MerchantDashboard() {
 
   async function generatePreview() {
     if (!merchant?.id) return;
+    setPreviewLoading(true);
     try {
+      const itemNames = INVENTORY.filter((i) => selectedItems.includes(i.id)).map((i) => i.name);
       const { data, error } = await supabase.functions.invoke("generate-offer", {
-        body: { user_session_id: `merchant-preview-${merchant.id}`, lat: merchant.lat, lng: merchant.lng, force_merchant_id: merchant.id },
+        body: {
+          user_session_id: `merchant-preview-${merchant.id}`,
+          lat: merchant.lat,
+          lng: merchant.lng,
+          force_merchant_id: merchant.id,
+          discount_min: discountRange[0],
+          discount_max: discountRange[1],
+          inventory_items: itemNames,
+        },
       });
       if (!handleAiResponse(data, error, { silent: true })) return;
       const first = data?.offers?.[0];
       if (first) setPreviewOffer({ ...first, merchant });
     } catch (e) {
       console.error(e);
+    } finally {
+      setPreviewLoading(false);
     }
   }
+
+  // Auto-regenerate preview when discount or selected items change (after initial rule exists)
+  useEffect(() => {
+    if (!hasRule || !merchant?.id) return;
+    const t = setTimeout(() => generatePreview(), 600);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [discountRange[0], discountRange[1], selectedItems.join(","), hasRule]);
 
   async function fireSuggested() {
     if (!insight || !merchant?.id) return;
@@ -231,24 +254,40 @@ export default function MerchantDashboard() {
           </section>
         )}
 
-        {/* Presets */}
-        <section className="mt-7">
-          <div className="font-mono text-[11px] tracking-widest uppercase opacity-70 mb-2">Or pick a preset</div>
-          <div className="grid grid-cols-2 gap-3">
-            {PRESETS.map((p) => (
+        {/* Live preview — promoted to hero, sits right under the translation */}
+        <section className="mt-6">
+          <div className="flex items-center justify-between mb-2">
+            <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">What customers see</div>
+            {hasRule && (
               <button
-                key={p.label}
-                onClick={() => setGoalText(p.text)}
-                className="rounded-2xl bg-ink-2 border border-cream/10 p-4 text-left hover:border-lime transition-colors"
+                onClick={generatePreview}
+                disabled={previewLoading}
+                className="font-mono text-[11px] tracking-widest uppercase text-lime hover:underline disabled:opacity-50 flex items-center gap-1"
               >
-                <i className={`ph-fill ${p.icon} text-xl text-lime`} aria-hidden />
-                <div className="font-display text-xl mt-2 leading-tight">{p.label}</div>
+                <i className={`ph-fill ph-arrows-clockwise ${previewLoading ? "animate-spin" : ""}`} />
+                {previewLoading ? "Regenerating…" : "Regenerate"}
               </button>
-            ))}
+            )}
           </div>
+          {previewLoading && !previewOffer ? (
+            <OfferCardSkeleton hero />
+          ) : previewOffer ? (
+            <div className={previewLoading ? "opacity-60 transition-opacity" : "transition-opacity"}>
+              <OfferCard offer={previewOffer} hero />
+            </div>
+          ) : (
+            <div className="rounded-[24px] bg-ink-2 border border-dashed border-cream/15 p-6 min-h-[280px] flex items-center justify-center text-center">
+              <div>
+                <i className="ph ph-eye text-3xl opacity-50" />
+                <p className="font-mono text-[11px] uppercase tracking-widest mt-2 opacity-60">
+                  Translate a goal to see the live offer
+                </p>
+              </div>
+            </div>
+          )}
         </section>
 
-        {/* Inventory */}
+        {/* Tuning controls — Inventory + Discount sit right under the preview so changes feel immediate */}
         <section className="mt-7">
           <div className="flex items-center justify-between mb-2">
             <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">Inventory · pick what to push</div>
@@ -307,19 +346,21 @@ export default function MerchantDashboard() {
           <DualRange value={discountRange} onChange={setDiscountRange} min={5} max={40} />
         </section>
 
-        {/* Live preview */}
+        {/* Presets — moved below as quick-fill helpers */}
         <section className="mt-7">
-          <div className="font-mono text-[11px] tracking-widest uppercase opacity-70 mb-2">What customers see</div>
-          {previewOffer ? (
-            <OfferCard offer={previewOffer} hero />
-          ) : (
-            <div className="rounded-[24px] bg-ink-2 border border-dashed border-cream/15 p-6 min-h-[200px] flex items-center justify-center text-center">
-              <div>
-                <i className="ph ph-eye text-2xl opacity-50" />
-                <p className="font-mono text-[11px] uppercase tracking-widest mt-2 opacity-60">Translate a goal to preview the live offer</p>
-              </div>
-            </div>
-          )}
+          <div className="font-mono text-[11px] tracking-widest uppercase opacity-70 mb-2">Or pick a preset</div>
+          <div className="grid grid-cols-2 gap-3">
+            {PRESETS.map((p) => (
+              <button
+                key={p.label}
+                onClick={() => setGoalText(p.text)}
+                className="rounded-2xl bg-ink-2 border border-cream/10 p-4 text-left hover:border-lime transition-colors"
+              >
+                <i className={`ph-fill ${p.icon} text-xl text-lime`} aria-hidden />
+                <div className="font-display text-xl mt-2 leading-tight">{p.label}</div>
+              </button>
+            ))}
+          </div>
         </section>
 
         {/* Live stats */}

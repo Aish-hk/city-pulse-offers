@@ -57,7 +57,15 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { user_session_id, lat = 51.5246, lng = -0.0784, force_merchant_id } = await req.json();
+    const {
+      user_session_id,
+      lat = 51.5246,
+      lng = -0.0784,
+      force_merchant_id,
+      discount_min,
+      discount_max,
+      inventory_items,
+    } = await req.json();
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -74,12 +82,13 @@ Deno.serve(async (req) => {
     });
     const ctx: Ctx = await ctxResp.json();
 
-    // Pull active rules + merchants
+    // Pull active rules + merchants. When forced, get the latest rule for that merchant.
     let rulesQuery = supabase
       .from("merchant_rules")
       .select("*, merchants(*)")
-      .eq("is_active", true);
-    if (force_merchant_id) rulesQuery = rulesQuery.eq("merchant_id", force_merchant_id);
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+    if (force_merchant_id) rulesQuery = rulesQuery.eq("merchant_id", force_merchant_id).limit(1);
 
     const { data: rules, error } = await rulesQuery;
     if (error) throw error;
@@ -90,35 +99,42 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Score
+    // Score — but when force_merchant_id is present (merchant preview), bypass the gate
+    // so the merchant always sees their offer regardless of current time/weather match.
     const scored = rules
       .map((r: any) => {
         const d = distM([lat, lng], [r.merchants.lat, r.merchants.lng]);
         return { rule: r, distance_m: d, score: ruleScore(r, ctx, d) };
       })
-      .filter((x) => x.score > 0.2)
+      .filter((x) => force_merchant_id || x.score > 0.2)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 4);
+      .slice(0, force_merchant_id ? 1 : 4);
 
     const created: any[] = [];
 
     for (const item of scored) {
       const r = item.rule;
       const m = r.merchants;
+      const lo = Math.max(r.min_discount_pct, Number(discount_min) || r.min_discount_pct);
+      const hi = Math.min(r.max_discount_pct, Number(discount_max) || r.max_discount_pct);
+      const items = Array.isArray(inventory_items) && inventory_items.length > 0
+        ? inventory_items.join(", ")
+        : (r.inventory_tag || "general");
+
       const sys = `You are the Offer Generation Engine. Output RAW, VALID JSON ONLY. No markdown.
 Schema: { "headline": string, "body": string, "cta": string, "discount_pct": int, "urgency_reason": string, "expires_in_minutes": int }
 STRICT RULES:
-1. Math: discount_pct must be an integer strictly between ${r.min_discount_pct}% and ${r.max_discount_pct}%.
+1. Math: discount_pct must be an integer between ${lo}% and ${hi}%.
 2. Brand voice: match "${m.brand_voice}" exactly.
 3. UK English only: flat white, takeaway, queue, savoury.
-4. headline: max 8 words, punchy, editorial.
+4. headline: max 8 words, punchy, editorial. Reference the featured item(s) if specific.
 5. body: one sentence, max 18 words.
 6. urgency_reason: short, earned by context, e.g. "Wet Tuesday afternoon — pre-rush capacity."
 7. cta: 2-4 words, action-led.`;
 
       const usr = `Merchant: ${m.name} (${m.category}) on ${m.address}.
 Goal: ${r.goal_text_input || r.goal_type}.
-Inventory tag: ${r.inventory_tag || "general"}.
+Featured items: ${items}.
 Context: ${ctx.time_of_day} on day ${ctx.day_of_week}, weather ${ctx.weather}, ${ctx.temp_c}°C, ${Math.round(item.distance_m)}m from customer.`;
 
       let aiJson: any = null;
@@ -139,7 +155,6 @@ Context: ${ctx.time_of_day} on day ${ctx.day_of_week}, weather ${ctx.weather}, $
           const t = await aiResp.text();
           console.error("ai gateway error", aiResp.status, t);
           if (aiResp.status === 429 || aiResp.status === 402) {
-            // Return 200 + structured error so client handles it gracefully.
             return new Response(
               JSON.stringify({
                 error: aiResp.status === 429 ? "rate_limited" : "credits_required",
@@ -162,10 +177,7 @@ Context: ${ctx.time_of_day} on day ${ctx.day_of_week}, weather ${ctx.weather}, $
         continue;
       }
 
-      const discount = Math.max(
-        r.min_discount_pct + 1,
-        Math.min(r.max_discount_pct - 1, Number(aiJson.discount_pct) || r.min_discount_pct + 5)
-      );
+      const discount = Math.max(lo, Math.min(hi, Number(aiJson.discount_pct) || Math.round((lo + hi) / 2)));
       const expiresMins = Math.max(15, Math.min(180, Number(aiJson.expires_in_minutes) || 60));
 
       const ins = await supabase

@@ -2,95 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* CITY WALLET DESIGN SYSTEM
+   Editorial-magazine meets sticker-culture.
+   All colors are HSL. Use semantic tokens — never hardcode in components. */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Surfaces */
+    --ink: 130 16% 5%;          /* #0A0E0B */
+    --ink-2: 120 14% 9%;        /* #141A15 */
+    --ink-3: 130 12% 14%;       /* #1F2820 */
+    --cream: 45 53% 91%;        /* #F4EDDD */
+    --cream-2: 45 44% 86%;      /* #ECE3CD */
+    --cream-warm: 42 60% 93%;   /* #F8F2E4 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Accents */
+    --lime: 73 100% 62%;        /* #D9FF3C */
+    --lime-bright: 73 100% 66%; /* #E5FF52 */
+    --tomato: 11 100% 61%;      /* #FF5938 */
+    --grape: 252 100% 68%;      /* #7B5BFF */
+    --butter: 51 100% 62%;      /* #FFD93D */
+    --sky: 200 100% 68%;        /* #5BC8FF */
+    --rose: 345 100% 85%;       /* #FFB5C5 */
+    --moss: 95 28% 33%;         /* #4A6B3A */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Semantic — light mode (cream backgrounds) */
+    --background: var(--cream);
+    --foreground: var(--ink);
+    --card: var(--cream-warm);
+    --card-foreground: var(--ink);
+    --popover: var(--cream-warm);
+    --popover-foreground: var(--ink);
+    --primary: var(--ink);
+    --primary-foreground: var(--cream);
+    --secondary: var(--cream-2);
+    --secondary-foreground: var(--ink);
+    --muted: var(--cream-2);
+    --muted-foreground: 130 10% 25%;
+    --accent: var(--lime);
+    --accent-foreground: var(--ink);
+    --destructive: var(--tomato);
+    --destructive-foreground: var(--cream);
+    --border: 45 25% 78%;
+    --input: 45 25% 78%;
+    --ring: var(--lime);
+    --radius: 1.25rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: var(--ink);
+    --foreground: var(--cream);
+    --card: var(--ink-2);
+    --card-foreground: var(--cream);
+    --popover: var(--ink-2);
+    --popover-foreground: var(--cream);
+    --primary: var(--lime);
+    --primary-foreground: var(--ink);
+    --secondary: var(--ink-3);
+    --secondary-foreground: var(--cream);
+    --muted: var(--ink-3);
+    --muted-foreground: 45 20% 70%;
+    --accent: var(--lime);
+    --accent-foreground: var(--ink);
+    --destructive: var(--tomato);
+    --destructive-foreground: var(--cream);
+    --border: 130 12% 18%;
+    --input: 130 12% 18%;
+    --ring: var(--lime);
   }
 }
 
@@ -99,7 +77,180 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground;
+  html, body, #root {
+    @apply min-h-screen;
   }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-feature-settings: 'ss01', 'ss02';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: hsl(var(--lime));
+    color: hsl(var(--ink));
+  }
+
+  /* Focus ring per spec — 2px lime with 2px offset */
+  :focus-visible {
+    outline: 2px solid hsl(var(--lime));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: 'Instrument Serif', 'Times New Roman', serif;
+    font-style: italic;
+    letter-spacing: -0.01em;
+  }
+
+  .font-mono-cap {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Dashed divider per spec — only on dark */
+  .divider-dashed {
+    border-top: 1px dashed hsl(var(--cream) / 0.2);
+  }
+  .divider-dashed-ink {
+    border-top: 1px dashed hsl(var(--ink) / 0.18);
+  }
+
+  /* Heartbeat live dot */
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: hsl(var(--lime));
+    box-shadow: 0 0 0 0 hsl(var(--lime) / 0.6);
+    animation: heartbeat 1.4s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  /* Discount typography */
+  .discount-display {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+  }
+
+  /* Pill button base — 52px tall, full radius */
+  .pill {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-medium transition-transform;
+    height: 52px;
+    padding: 0 1.5rem;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .pill:active {
+    transform: scale(0.97);
+  }
+  .pill-sm {
+    height: 36px;
+    padding: 0 1rem;
+    font-size: 13px;
+  }
+
+  /* Stamp — rotated -6deg square with rounded corners, holds a phosphor icon */
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    transform: rotate(-6deg);
+    flex-shrink: 0;
+  }
+  .stamp i {
+    font-size: 30px;
+    line-height: 1;
+  }
+  .stamp-sm {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+  .stamp-sm i { font-size: 22px; }
+  .stamp-lg {
+    width: 76px;
+    height: 76px;
+    border-radius: 18px;
+  }
+  .stamp-lg i { font-size: 40px; }
+
+  /* "Because…" pill */
+  .because-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+
+  /* Hide scrollbars on horizontal carousels */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Subtle paper grain — overlay on bold cards */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+    border-radius: inherit;
+  }
+}
+
+@layer utilities {
+  .rotate-stamp { transform: rotate(-6deg); }
+  .rotate-tilt { transform: rotate(-2deg); }
+  .rotate-tilt-r { transform: rotate(2deg); }
+
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+
+  /* Safe-area helpers for mobile */
+  .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 1rem); }
+  .pt-safe { padding-top: max(env(safe-area-inset-top), 0.75rem); }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 hsl(var(--lime) / 0.6); }
+  50%      { transform: scale(1.5); box-shadow: 0 0 0 6px hsl(var(--lime) / 0); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes confetti-fall {
+  0%   { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }

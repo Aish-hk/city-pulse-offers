@@ -26,6 +26,16 @@ const PRESETS = [
   { label: "Match the weather", icon: "ph-cloud-rain", text: "When it rains, push hot drinks to anyone within 400m" },
 ];
 
+type InventoryItem = { id: string; name: string; icon: string; stock: number; tag: "hot" | "cold" | "bake" | "savoury" };
+const INVENTORY: InventoryItem[] = [
+  { id: "flat-white", name: "Flat White", icon: "ph-coffee", stock: 999, tag: "hot" },
+  { id: "iced-latte", name: "Iced Latte", icon: "ph-cup", stock: 24, tag: "cold" },
+  { id: "croissant", name: "Croissant", icon: "ph-cookie", stock: 8, tag: "bake" },
+  { id: "almond-pastry", name: "Almond Pastry", icon: "ph-cookie", stock: 12, tag: "bake" },
+  { id: "banana-bread", name: "Banana Bread", icon: "ph-bread", stock: 5, tag: "bake" },
+  { id: "toastie", name: "Ham Toastie", icon: "ph-hamburger", stock: 6, tag: "savoury" },
+];
+
 export default function MerchantDashboard() {
   const { id = "watch-house" } = useParams();
   const [merchant, setMerchant] = useState<any>(null);
@@ -37,6 +47,29 @@ export default function MerchantDashboard() {
   const [insightLoading, setInsightLoading] = useState(false);
   const [stats, setStats] = useState({ liveOffers: 0, redemptions: 0, recoveredPence: 0 });
   const [previewOffer, setPreviewOffer] = useState<OfferCardData | null>(null);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [aiPicking, setAiPicking] = useState(false);
+
+  function toggleItem(id: string) {
+    setSelectedItems((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  }
+
+  function aiSuggestItems() {
+    setAiPicking(true);
+    setSelectedItems([]);
+    // Spoof: stagger-pick low-stock + perishables
+    const ranked = [...INVENTORY].sort((a, b) => a.stock - b.stock).slice(0, 3);
+    ranked.forEach((item, i) => {
+      setTimeout(() => {
+        setSelectedItems((prev) => [...prev, item.id]);
+        if (i === ranked.length - 1) {
+          setAiPicking(false);
+          const names = ranked.map((r) => r.name).join(", ");
+          setGoalText(`Move ${names} before close — they're running low and won't survive tomorrow`);
+        }
+      }, 350 * (i + 1));
+    });
+  }
 
   useEffect(() => {
     (async () => {
@@ -213,6 +246,56 @@ export default function MerchantDashboard() {
               </button>
             ))}
           </div>
+        </section>
+
+        {/* Inventory */}
+        <section className="mt-7">
+          <div className="flex items-center justify-between mb-2">
+            <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">Inventory · pick what to push</div>
+            <button
+              onClick={aiSuggestItems}
+              disabled={aiPicking}
+              className="font-mono text-[11px] tracking-widest uppercase text-lime hover:underline disabled:opacity-50 flex items-center gap-1"
+            >
+              <i className={`ph-fill ph-sparkle ${aiPicking ? "animate-pulse" : ""}`} />
+              {aiPicking ? "AI picking…" : "AI suggest"}
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {INVENTORY.map((item) => {
+              const selected = selectedItems.includes(item.id);
+              const low = item.stock <= 8;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => toggleItem(item.id)}
+                  className={`relative rounded-2xl border p-3 text-left transition-all ${
+                    selected
+                      ? "bg-lime text-ink border-lime"
+                      : "bg-ink-2 border-cream/10 text-cream hover:border-cream/30"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <i className={`ph-fill ${item.icon} text-lg`} aria-hidden />
+                    {low && (
+                      <span className={`font-mono text-[9px] tracking-widest uppercase px-1.5 py-0.5 rounded ${selected ? "bg-ink/10 text-ink" : "bg-tomato/20 text-tomato"}`}>
+                        {item.stock} left
+                      </span>
+                    )}
+                  </div>
+                  <div className="font-display text-base mt-1.5 leading-tight">{item.name}</div>
+                  {selected && (
+                    <i className="ph-fill ph-check-circle absolute top-2 right-2 text-ink" aria-hidden />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          {selectedItems.length > 0 && (
+            <div className="font-mono text-[11px] opacity-60 mt-2">
+              {selectedItems.length} item{selectedItems.length > 1 ? "s" : ""} folded into the offer
+            </div>
+          )}
         </section>
 
         {/* Discount slider */}

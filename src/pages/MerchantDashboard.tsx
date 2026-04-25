@@ -47,6 +47,29 @@ export default function MerchantDashboard() {
   const [insightLoading, setInsightLoading] = useState(false);
   const [stats, setStats] = useState({ liveOffers: 0, redemptions: 0, recoveredPence: 0 });
   const [previewOffer, setPreviewOffer] = useState<OfferCardData | null>(null);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [aiPicking, setAiPicking] = useState(false);
+
+  function toggleItem(id: string) {
+    setSelectedItems((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  }
+
+  function aiSuggestItems() {
+    setAiPicking(true);
+    setSelectedItems([]);
+    // Spoof: stagger-pick low-stock + perishables
+    const ranked = [...INVENTORY].sort((a, b) => a.stock - b.stock).slice(0, 3);
+    ranked.forEach((item, i) => {
+      setTimeout(() => {
+        setSelectedItems((prev) => [...prev, item.id]);
+        if (i === ranked.length - 1) {
+          setAiPicking(false);
+          const names = ranked.map((r) => r.name).join(", ");
+          setGoalText(`Move ${names} before close — they're running low and won't survive tomorrow`);
+        }
+      }, 350 * (i + 1));
+    });
+  }
 
   useEffect(() => {
     (async () => {

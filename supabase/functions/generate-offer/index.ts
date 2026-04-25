@@ -57,7 +57,15 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { user_session_id, lat = 51.5246, lng = -0.0784, force_merchant_id } = await req.json();
+    const {
+      user_session_id,
+      lat = 51.5246,
+      lng = -0.0784,
+      force_merchant_id,
+      discount_min,
+      discount_max,
+      inventory_items,
+    } = await req.json();
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -74,12 +82,13 @@ Deno.serve(async (req) => {
     });
     const ctx: Ctx = await ctxResp.json();
 
-    // Pull active rules + merchants
+    // Pull active rules + merchants. When forced, get the latest rule for that merchant.
     let rulesQuery = supabase
       .from("merchant_rules")
       .select("*, merchants(*)")
-      .eq("is_active", true);
-    if (force_merchant_id) rulesQuery = rulesQuery.eq("merchant_id", force_merchant_id);
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+    if (force_merchant_id) rulesQuery = rulesQuery.eq("merchant_id", force_merchant_id).limit(1);
 
     const { data: rules, error } = await rulesQuery;
     if (error) throw error;
@@ -90,15 +99,16 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Score
+    // Score — but when force_merchant_id is present (merchant preview), bypass the gate
+    // so the merchant always sees their offer regardless of current time/weather match.
     const scored = rules
       .map((r: any) => {
         const d = distM([lat, lng], [r.merchants.lat, r.merchants.lng]);
         return { rule: r, distance_m: d, score: ruleScore(r, ctx, d) };
       })
-      .filter((x) => x.score > 0.2)
+      .filter((x) => force_merchant_id || x.score > 0.2)
       .sort((a, b) => b.score - a.score)
-      .slice(0, 4);
+      .slice(0, force_merchant_id ? 1 : 4);
 
     const created: any[] = [];
 

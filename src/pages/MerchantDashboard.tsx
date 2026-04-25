@@ -5,7 +5,7 @@ import { Stamp } from "@/components/Stamp";
 import { LiveDot } from "@/components/LiveDot";
 import { PillButton } from "@/components/PillButton";
 import { categoryIcon } from "@/lib/brand";
-import { OfferCard, type OfferCardData } from "@/components/OfferCard";
+import { OfferCard, OfferCardSkeleton, type OfferCardData } from "@/components/OfferCard";
 import { handleAiResponse } from "@/lib/aiErrors";
 import illusAvatars from "@/assets/illus-avatars.webp";
 import illusCityLife from "@/assets/illus-city-life.jpeg";

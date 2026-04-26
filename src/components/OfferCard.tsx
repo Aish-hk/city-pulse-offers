@@ -48,7 +48,7 @@ function PhotoTile({
   src,
   alt,
   size = "md",
-  rotate = -6,
+  rotate = -8,
 }: {
   src: string;
   alt: string;
@@ -58,11 +58,14 @@ function PhotoTile({
   const dim = size === "lg" ? "h-20 w-20" : size === "sm" ? "h-10 w-10" : "h-14 w-14";
   return (
     <span
-      className={cn("inline-block overflow-hidden rounded-2xl shadow-md ring-1 ring-ink/10 shrink-0", dim)}
+      className={cn(
+        "inline-block overflow-hidden rounded-2xl shadow-lg ring-1 ring-ink/15 shrink-0 bg-cream p-1.5",
+        dim
+      )}
       style={{ transform: `rotate(${rotate}deg)` }}
       aria-hidden
     >
-      <img src={src} alt={alt} loading="lazy" className="h-full w-full object-cover" />
+      <img src={src} alt={alt} loading="lazy" className="h-full w-full object-cover rounded-xl" />
     </span>
   );
 }
@@ -111,7 +114,7 @@ export function OfferCard({ offer, tone = "cream", hero = false, index = 0 }: Of
 
       {/* Headline */}
       <h2
-        className={cn("font-display leading-[1.05] mt-8 text-balance pr-2")}
+        className={cn("font-display leading-[1.1] mt-10 text-balance pr-2")}
         style={{ fontSize: hero ? 40 : 24 }}
       >
         {offer.headline}
@@ -119,13 +122,13 @@ export function OfferCard({ offer, tone = "cream", hero = false, index = 0 }: Of
 
       {/* Body — generous vertical breathing room */}
       {(hero || offer.body) && (
-        <p className={cn("mt-5 text-[15px] leading-relaxed max-w-[36ch] text-pretty", isDark ? "opacity-80" : "opacity-70")}>
+        <p className={cn("mt-6 text-[15px] leading-[1.7] max-w-[36ch] text-pretty", isDark ? "opacity-80" : "opacity-70")}>
           {offer.body}
         </p>
       )}
 
       {/* Footer */}
-      <div className={cn("mt-10 flex items-end justify-between gap-3")}>
+      <div className={cn("mt-12 flex items-end justify-between gap-3")}>
         <BecausePill className={TONE_BECAUSE[t]}>{offer.urgency_reason}</BecausePill>
         <div className="flex items-center gap-3">
           <span className={cn("font-mono text-[11px]", isDark ? "opacity-70" : "opacity-60")}>

@@ -1,5 +1,6 @@
 import tapHand from "@/assets/illus-tap-hand.png";
 import cardMachine from "@/assets/illus-card-machine.png";
+import offerDetailMock from "@/assets/mock-offer-detail.png";
 import { ArrowUpRight } from "lucide-react";
 
 /**
@@ -37,12 +38,10 @@ export function HowItWorksSteps() {
         title="Tap the offer to add it to your wallet — instantly."
         blobColor="hsl(var(--butter))"
         screen={
-          <OfferMock
-            tone="tomato"
-            merchant="PHỞ MỘC"
-            sub="Hackney · Vietnamese"
-            headline="Last Lunch Orders: House Special Phở"
-            because="Beat the queue — family recipe."
+          <img
+            src={offerDetailMock}
+            alt="Offer detail screen"
+            className="absolute inset-0 h-full w-full object-cover object-top"
           />
         }
         overlay={
@@ -52,7 +51,8 @@ export function HowItWorksSteps() {
             loading="lazy"
             width={512}
             height={512}
-            className="absolute bottom-6 right-2 h-20 w-20 object-contain pointer-events-none drop-shadow-md -rotate-[8deg]"
+            className="absolute bottom-[18%] right-[8%] h-24 w-24 object-contain pointer-events-none drop-shadow-xl -rotate-[18deg] animate-tap-pulse"
+            style={{ transformOrigin: "80% 80%" }}
           />
         }
       />

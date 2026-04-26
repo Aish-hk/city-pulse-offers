@@ -1,6 +1,6 @@
 import tapHand from "@/assets/illus-tap-hand.png";
-import cardMachine from "@/assets/illus-card-machine.png";
 import offerDetailMock from "@/assets/mock-offer-detail.png";
+import redeemMock from "@/assets/mock-redeem.png";
 import { ArrowUpRight } from "lucide-react";
 
 /**
@@ -63,22 +63,10 @@ export function HowItWorksSteps() {
         title="Show your pass at the till. Discount handled, no awkward chat."
         blobColor="hsl(var(--lime))"
         screen={
-          <OfferMock
-            tone="cream"
-            merchant="LUCY WONG"
-            sub="Soho · Dim sum"
-            headline="Tap, pay, saved. Magic at the till."
-            because="Pass ready · show on entry."
-          />
-        }
-        overlay={
           <img
-            src={cardMachine}
-            alt=""
-            loading="lazy"
-            width={512}
-            height={512}
-            className="absolute -bottom-3 -right-3 h-24 w-24 object-contain pointer-events-none drop-shadow-md"
+            src={redeemMock}
+            alt="Redeem at counter screen"
+            className="absolute inset-0 h-full w-full object-cover object-top"
           />
         }
       />
@@ -117,7 +105,7 @@ function Step({
           />
         </div>
 
-        <div className="relative mx-auto w-[200px]">
+        <div className="relative mx-auto w-[260px]">
           <PhoneFrame>{screen}</PhoneFrame>
         </div>
 
@@ -129,9 +117,9 @@ function Step({
 
 function PhoneFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-[30px] bg-foreground p-[5px] shadow-xl">
-      <div className="rounded-[26px] bg-background overflow-hidden h-[340px] relative">
-        <div className="absolute top-1.5 left-1/2 -translate-x-1/2 h-3.5 w-16 rounded-full bg-foreground z-10" />
+    <div className="rounded-[36px] bg-foreground p-[6px] shadow-xl">
+      <div className="rounded-[30px] bg-background overflow-hidden h-[540px] relative">
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 h-4 w-20 rounded-full bg-foreground z-10" />
         {children}
       </div>
     </div>

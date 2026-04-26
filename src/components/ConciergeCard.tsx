@@ -139,7 +139,7 @@ export function ConciergeCard({ className }: Props) {
           </div>
         )}
       </div>
-      </section>
-    </div>
+    </section>
+  );
   );
 }

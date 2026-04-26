@@ -26,7 +26,7 @@ export function HowItWorksSteps() {
           <img
             src={discoverMock}
             alt="Discover offers screen"
-            className="absolute inset-0 h-full w-full object-cover object-top"
+            className="absolute inset-0 h-full w-full object-cover"
           />
         }
         overlay={
@@ -36,7 +36,7 @@ export function HowItWorksSteps() {
             loading="lazy"
             width={512}
             height={512}
-            className="absolute top-[28%] right-[6%] h-24 w-24 object-contain pointer-events-none drop-shadow-xl -rotate-[18deg] animate-tap-pulse"
+            className="absolute top-[40%] right-[4%] h-24 w-24 object-contain pointer-events-none drop-shadow-xl -rotate-[18deg] animate-tap-pulse"
             style={{ transformOrigin: "80% 80%" }}
           />
         }

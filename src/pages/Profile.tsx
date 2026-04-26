@@ -165,11 +165,7 @@ export default function ProfilePage() {
         />
       </section>
 
-      <div className="mt-6 text-center">
-        <Link to="/passes" className="font-mono text-[11px] tracking-widest uppercase text-foreground/70">
-          → View Apple Wallet passes
-        </Link>
-      </div>
+      <div className="h-6" />
     </PhoneShell>
   );
 }

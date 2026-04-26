@@ -23,14 +23,14 @@ export default function Index() {
             The corner café gets <span className="text-lime">algorithmic</span> too.
           </h1>
           <p className="opacity-80 mt-4 max-w-[34ch]">
-            A merchant types a goal in plain English. Our AI turns it into live, context-aware offers that reach nearby customers in seconds.
+            A merchant types a goal in plain English. Our AI turns it into live, context aware offers that reach nearby customers in seconds.
           </p>
         </section>
 
         <section className="mt-8 rounded-[28px] overflow-hidden bg-cream-warm text-ink p-5 grain relative">
           <img src={illusCityScene} alt="" className="w-full mix-blend-multiply" />
           <div className="font-mono text-[11px] tracking-widest uppercase opacity-60 mt-2">Two sides, one wallet</div>
-          <p className="font-display italic text-2xl mt-1 leading-tight">Built for the merchant. Loved by the city.</p>
+          <p className="font-display italic text-2xl mt-1 leading-tight">Built for the customers and merchant. Loved by the city.</p>
         </section>
 
         <section className="mt-6 grid grid-cols-2 gap-3">

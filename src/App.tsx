@@ -12,6 +12,7 @@ import MerchantDashboard from "./pages/MerchantDashboard.tsx";
 import Demo from "./pages/Demo.tsx";
 import Profile from "./pages/Profile.tsx";
 import Passes from "./pages/Passes.tsx";
+import Discover from "./pages/Discover.tsx";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/demo" element={<Demo />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/passes" element={<Passes />} />
+          <Route path="/discover" element={<Discover />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

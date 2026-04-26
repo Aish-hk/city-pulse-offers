@@ -6,6 +6,8 @@ import { OfferCard, OfferCardSkeleton, type OfferCardData } from "@/components/O
 import { PhoneShell } from "@/components/PhoneShell";
 import { PillButton } from "@/components/PillButton";
 import { FilterBar, DEFAULT_FILTERS, type Filters } from "@/components/FilterBar";
+import { CityCrowdCard } from "@/components/CityCrowdCard";
+import { ConciergeCard } from "@/components/ConciergeCard";
 import { toneFor } from "@/lib/brand";
 import { handleAiResponse } from "@/lib/aiErrors";
 import { bootTheme } from "@/lib/theme";

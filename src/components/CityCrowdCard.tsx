@@ -7,44 +7,51 @@ interface Props {
 }
 
 /**
- * The illustration / "join the city" card that used to live above the concierge.
- * Uses the cartoon avatar set as a friendly visual anchor.
+ * "The locals" card — reuses the merchant dashboard's tilted cream-warm
+ * editorial tile (rotate-tilt + grain + dashed divider).
  */
 export function CityCrowdCard({ className }: Props) {
   const sample = AVATARS.slice(0, 7);
   return (
-    <section
-      className={cn(
-        "rounded-[28px] bg-butter text-ink p-7 grain overflow-hidden relative",
-        className
-      )}
-    >
-      <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">
-        The locals
-      </div>
-      <h3 className="font-display text-3xl leading-[1.05] mt-3 max-w-[18ch]">
-        2,431 Londoners are eating better today.
-      </h3>
-      <p className="mt-4 text-[14px] leading-relaxed opacity-75 max-w-[34ch]">
-        Independent kitchens, picked by people who actually live here.
-      </p>
-
-      <div className="mt-6 flex items-center -space-x-3">
-        {sample.map((src, i) => (
-          <span
-            key={i}
-            className="h-11 w-11 rounded-full bg-cream ring-2 ring-butter overflow-hidden inline-block"
-            style={{ transform: `translateY(${i % 2 ? 4 : 0}px)` }}
+    <section className={cn("mt-2", className)}>
+      <div className="rounded-[24px] bg-cream-warm text-ink p-5 rotate-tilt grain relative">
+        <div className="flex items-center justify-between">
+          <div className="font-mono text-[11px] tracking-widest uppercase opacity-60">
+            The locals
+          </div>
+          <Link
+            to="/profile"
+            className="text-[11px] font-mono underline opacity-70 hover:opacity-100"
           >
-            <img src={src} alt="" className="h-full w-full object-cover" />
-          </span>
-        ))}
-        <Link
-          to="/profile"
-          className="ml-4 inline-flex items-center gap-1 text-[12px] font-mono uppercase tracking-widest underline-offset-4 hover:underline"
-        >
-          Join → <i className="ph ph-arrow-up-right" />
-        </Link>
+            join →
+          </Link>
+        </div>
+
+        <p className="font-display italic text-2xl mt-2 leading-snug">
+          2,431 Londoners are eating better today.
+        </p>
+
+        <div className="divider-dashed-ink my-4" />
+
+        <div className="font-mono text-[11px] tracking-widest uppercase opacity-60">
+          Why it matters
+        </div>
+        <p className="text-[15px] mt-1 leading-relaxed">
+          Independent kitchens, picked by people who actually live here.
+        </p>
+
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <div className="flex items-center -space-x-2">
+            {sample.map((src, i) => (
+              <span
+                key={i}
+                className="h-9 w-9 rounded-full bg-cream ring-2 ring-cream-warm overflow-hidden inline-block"
+              >
+                <img src={src} alt="" className="h-full w-full object-cover" />
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

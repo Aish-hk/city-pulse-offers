@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 
 const items = [
   { to: "/wallet", icon: "ph-wallet", label: "Wallet" },
-  { to: "/discover", icon: "ph-compass", label: "Discover" },
   { to: "/profile", icon: "ph-user-circle", label: "Profile" },
   { to: "/merchant/watch-house", icon: "ph-storefront", label: "Merchant" },
 ];
@@ -11,7 +10,7 @@ const items = [
 export function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 pb-safe bg-background/90 backdrop-blur-xl border-t border-border/60">
-      <ul className="mx-auto max-w-md grid grid-cols-4 px-2 pt-2">
+      <ul className="mx-auto max-w-md grid grid-cols-3 px-2 pt-2">
         {items.map((it) => (
           <li key={it.to}>
             <NavLink

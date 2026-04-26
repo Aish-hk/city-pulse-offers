@@ -20,6 +20,23 @@ RULES:
 Example diagnosis: "Tuesday 3pm and it's drizzling — your pastry case is full and the office crowd has gone home. This is the slowest hour of your week."
 Example suggested_action: "Push 25% off any pastry + flat white to anyone within 400m for the next 90 minutes."`;
 
+function safeParseJson(raw: string): any {
+  let s = String(raw).replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+  try { return JSON.parse(s); } catch {}
+  const start = s.search(/[\{\[]/);
+  const open = start !== -1 ? s[start] : "{";
+  const close = open === "[" ? "]" : "}";
+  const end = s.lastIndexOf(close);
+  if (start !== -1 && end > start) {
+    s = s.substring(start, end + 1);
+  }
+  s = s.replace(/,\s*}/g, "}").replace(/,\s*]/g, "]").replace(/[\x00-\x1F\x7F]/g, "");
+  try { return JSON.parse(s); } catch (e) {
+    console.error("safeParseJson failed", e, "raw:", raw.slice(0, 500));
+    return {};
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   try {
@@ -97,7 +114,8 @@ Synthetic events: ${(ctx.synthetic_events || []).join("; ") || "none"}.`;
       );
     }
     const aj = await aiResp.json();
-    const parsed = JSON.parse(aj.choices?.[0]?.message?.content || "{}");
+    const raw = aj.choices?.[0]?.message?.content || "{}";
+    const parsed = safeParseJson(raw);
 
     const ins = await supabase.from("merchant_insights").insert({
       merchant_id,

@@ -48,7 +48,7 @@ function PhotoTile({
   src,
   alt,
   size = "md",
-  rotate = -6,
+  rotate = -8,
 }: {
   src: string;
   alt: string;
@@ -58,11 +58,14 @@ function PhotoTile({
   const dim = size === "lg" ? "h-20 w-20" : size === "sm" ? "h-10 w-10" : "h-14 w-14";
   return (
     <span
-      className={cn("inline-block overflow-hidden rounded-2xl shadow-md ring-1 ring-ink/10 shrink-0", dim)}
+      className={cn(
+        "inline-block overflow-hidden rounded-2xl shadow-lg ring-1 ring-ink/15 shrink-0 bg-cream p-1.5",
+        dim
+      )}
       style={{ transform: `rotate(${rotate}deg)` }}
       aria-hidden
     >
-      <img src={src} alt={alt} loading="lazy" className="h-full w-full object-cover" />
+      <img src={src} alt={alt} loading="lazy" className="h-full w-full object-cover rounded-xl" />
     </span>
   );
 }

@@ -111,7 +111,7 @@ export function OfferCard({ offer, tone = "cream", hero = false, index = 0 }: Of
 
       {/* Headline */}
       <h2
-        className={cn("font-display leading-[1.05] mt-8 text-balance pr-2")}
+        className={cn("font-display leading-[1.1] mt-10 text-balance pr-2")}
         style={{ fontSize: hero ? 40 : 24 }}
       >
         {offer.headline}
@@ -119,13 +119,13 @@ export function OfferCard({ offer, tone = "cream", hero = false, index = 0 }: Of
 
       {/* Body — generous vertical breathing room */}
       {(hero || offer.body) && (
-        <p className={cn("mt-5 text-[15px] leading-relaxed max-w-[36ch] text-pretty", isDark ? "opacity-80" : "opacity-70")}>
+        <p className={cn("mt-6 text-[15px] leading-[1.7] max-w-[36ch] text-pretty", isDark ? "opacity-80" : "opacity-70")}>
           {offer.body}
         </p>
       )}
 
       {/* Footer */}
-      <div className={cn("mt-10 flex items-end justify-between gap-3")}>
+      <div className={cn("mt-12 flex items-end justify-between gap-3")}>
         <BecausePill className={TONE_BECAUSE[t]}>{offer.urgency_reason}</BecausePill>
         <div className="flex items-center gap-3">
           <span className={cn("font-mono text-[11px]", isDark ? "opacity-70" : "opacity-60")}>

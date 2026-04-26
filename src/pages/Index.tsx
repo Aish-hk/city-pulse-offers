@@ -34,15 +34,15 @@ export default function Index() {
         </section>
 
         <section className="mt-6 grid grid-cols-2 gap-3">
-          <Link to="/merchant/watch-house" className="rounded-2xl bg-lime text-ink p-5 grain relative">
-            <i className="ph-fill ph-storefront text-2xl" />
-            <div className="font-display text-3xl leading-none mt-3">Merchant</div>
-            <div className="font-mono text-[11px] tracking-widest uppercase mt-1 opacity-70">command deck →</div>
-          </Link>
           <Link to="/wallet" className="rounded-2xl bg-tomato text-cream p-5 grain relative">
             <i className="ph-fill ph-wallet text-2xl" />
             <div className="font-display text-3xl leading-none mt-3">Wallet</div>
             <div className="font-mono text-[11px] tracking-widest uppercase mt-1 opacity-80">customer feed →</div>
+          </Link>
+          <Link to="/merchant/watch-house" className="rounded-2xl bg-lime text-ink p-5 grain relative">
+            <i className="ph-fill ph-storefront text-2xl" />
+            <div className="font-display text-3xl leading-none mt-3">Merchant</div>
+            <div className="font-mono text-[11px] tracking-widest uppercase mt-1 opacity-70">command deck →</div>
           </Link>
         </section>
 

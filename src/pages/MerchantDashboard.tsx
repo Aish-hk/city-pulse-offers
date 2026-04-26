@@ -18,7 +18,7 @@ import illusCityLife from "@/assets/illus-city-life.jpeg";
 async function resolveMerchant(idParam: string) {
   const isUuid = /^[0-9a-f]{8}-/.test(idParam);
   let q = supabase.from("merchants").select("*");
-  q = isUuid ? q.eq("id", idParam) : q.ilike("name", "%watch house%");
+  q = isUuid ? q.eq("id", idParam) : q.ilike("name", "%bon cafe%");
   const { data } = await q.limit(1).maybeSingle();
   return data;
 }
@@ -217,7 +217,21 @@ export default function MerchantDashboard() {
         {/* Header */}
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Stamp icon={merchant.icon_name || categoryIcon(merchant.category)} tone="bg-lime text-ink" />
+            {merchant.photo_url ? (
+              <span
+                className="stamp overflow-hidden p-0 bg-ink-2"
+                style={{ transform: "rotate(-6deg)" }}
+                aria-hidden
+              >
+                <img
+                  src={merchant.photo_url}
+                  alt={merchant.name}
+                  className="h-full w-full object-cover"
+                />
+              </span>
+            ) : (
+              <Stamp icon={merchant.icon_name || categoryIcon(merchant.category)} tone="bg-lime text-ink" />
+            )}
             <div>
               <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">{merchant.category}</div>
               <h1 className="font-display text-2xl leading-none">{merchant.name}</h1>

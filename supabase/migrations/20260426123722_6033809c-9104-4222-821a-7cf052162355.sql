@@ -1,0 +1,1 @@
+UPDATE public.merchants SET name = 'Bon Cafe' WHERE name = 'Watch House Coffee';

@@ -1,6 +1,7 @@
 import tapHand from "@/assets/illus-tap-hand.png";
 import offerDetailMock from "@/assets/mock-offer-detail.png";
 import redeemMock from "@/assets/mock-redeem.png";
+import discoverMock from "@/assets/mock-discover.png";
 import { ArrowUpRight } from "lucide-react";
 
 /**
@@ -22,12 +23,21 @@ export function HowItWorksSteps() {
         title="Discover hand-picked offers from kitchens around you."
         blobColor="hsl(var(--tomato))"
         screen={
-          <OfferMock
-            tone="lime"
-            merchant="BRICK & BE…"
-            sub="Peckham · Sp…"
-            headline="House Special: Less Waiting, More Flavour."
-            because="Lunch on cloudy Tuesday — beat the queue."
+          <img
+            src={discoverMock}
+            alt="Discover offers screen"
+            className="absolute inset-0 h-full w-full object-cover object-top"
+          />
+        }
+        overlay={
+          <img
+            src={tapHand}
+            alt=""
+            loading="lazy"
+            width={512}
+            height={512}
+            className="absolute top-[28%] right-[6%] h-24 w-24 object-contain pointer-events-none drop-shadow-xl -rotate-[18deg] animate-tap-pulse"
+            style={{ transformOrigin: "80% 80%" }}
           />
         }
       />
@@ -51,7 +61,7 @@ export function HowItWorksSteps() {
             loading="lazy"
             width={512}
             height={512}
-            className="absolute bottom-[18%] right-[8%] h-24 w-24 object-contain pointer-events-none drop-shadow-xl -rotate-[18deg] animate-tap-pulse"
+            className="absolute bottom-[2%] left-[18%] h-24 w-24 object-contain pointer-events-none drop-shadow-xl -rotate-[18deg] animate-tap-pulse"
             style={{ transformOrigin: "80% 80%" }}
           />
         }

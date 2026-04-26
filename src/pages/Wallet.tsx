@@ -159,18 +159,16 @@ export default function Wallet() {
         ) : hero ? (
           <>
             <OfferCard offer={hero} hero index={0} />
-            {stack.slice(0, 2).map((o, i) => (
+            {stack.slice(0, 3).map((o, i) => (
               <OfferCard key={o.id} offer={o} tone={toneFor(i)} index={i + 1} />
             ))}
-            {/* Editorial break: crowd illustration + concierge */}
+            {/* Editorial break: crowd illustration */}
             <CityCrowdCard />
-            {stack.slice(2, 4).map((o, i) => (
-              <OfferCard key={o.id} offer={o} tone={toneFor(i + 2)} index={i + 3} />
+            {stack.slice(3).map((o, i) => (
+              <OfferCard key={o.id} offer={o} tone={toneFor(i + 3)} index={i + 4} />
             ))}
+            {/* Closing red concierge — the final word */}
             <ConciergeCard />
-            {stack.slice(4).map((o, i) => (
-              <OfferCard key={o.id} offer={o} tone={toneFor(i + 4)} index={i + 5} />
-            ))}
           </>
         ) : (
           <EmptyState onGenerate={generateNew} generating={generating} />

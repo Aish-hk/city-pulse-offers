@@ -31,10 +31,15 @@ export function WalletHero({
   return (
     <header className="-mx-4 px-4 pt-safe pb-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-foreground/80">
-          <i className="ph ph-map-pin-area text-xl" aria-hidden />
-          <span className="font-mono text-[11px] tracking-widest uppercase">
-            {neighborhood}
+        <div className="flex items-center gap-2">
+          <span
+            aria-hidden
+            className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-foreground text-background"
+          >
+            <i className="ph-fill ph-wallet text-sm" />
+          </span>
+          <span className="font-display text-lg leading-none tracking-tight">
+            City Wallet
           </span>
         </div>
         <div className="flex items-center gap-3">
@@ -43,8 +48,11 @@ export function WalletHero({
         </div>
       </div>
 
+      {/* Thin divider above the hero illustration */}
+      <div className="mt-4 h-px w-full bg-foreground/15" />
+
       {/* Hero illustration card — fully replaces the green gradient */}
-      <div className="mt-3 rounded-[28px] overflow-hidden bg-card border border-border/40">
+      <div className="mt-4 rounded-[28px] overflow-hidden bg-card border border-border/40">
         <img
           src={heroGif}
           alt="Two friends sharing a meal, paying with the app"

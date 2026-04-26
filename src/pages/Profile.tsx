@@ -67,11 +67,11 @@ export default function ProfilePage() {
       {/* Identity */}
       <section className="rounded-[28px] bg-card border border-border/50 p-6">
         <div className="flex items-center gap-4">
-          <div className="h-20 w-20 shrink-0 rounded-2xl bg-background flex items-center justify-center overflow-hidden ring-1 ring-border/60 p-1">
+          <div className="h-20 w-20 shrink-0 rounded-2xl bg-background flex items-center justify-center overflow-hidden ring-1 ring-border/60">
             <img
               src={AVATARS[avatarIndex(profile.avatar_emoji)]}
               alt="Your avatar"
-              className="h-full w-full object-contain"
+              className="h-full w-full object-cover scale-110"
             />
           </div>
           <input
@@ -98,7 +98,7 @@ export default function ProfilePage() {
                   } bg-background`}
                   aria-label={`Avatar ${i + 1}`}
                 >
-                  <img src={src} alt="" className="h-full w-full object-contain p-1" />
+                  <img src={src} alt="" className="h-full w-full object-cover scale-110" />
                 </button>
               );
             })}

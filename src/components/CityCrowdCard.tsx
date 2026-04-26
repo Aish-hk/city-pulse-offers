@@ -45,9 +45,9 @@ export function CityCrowdCard({ className }: Props) {
             {sample.map((src, i) => (
               <span
                 key={i}
-                className="h-9 w-9 rounded-full bg-cream ring-2 ring-cream-warm overflow-hidden inline-block"
+                className="h-10 w-10 rounded-full bg-cream ring-2 ring-cream-warm overflow-hidden inline-flex items-center justify-center"
               >
-                <img src={src} alt="" className="h-full w-full object-cover" />
+                <img src={src} alt="" className="h-full w-full object-contain" />
               </span>
             ))}
           </div>

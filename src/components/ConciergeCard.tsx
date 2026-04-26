@@ -48,14 +48,12 @@ export function ConciergeCard({ className }: Props) {
   }
 
   return (
-    <div className="px-1 py-3">
-      <section
-        className={cn(
-          "relative rounded-[28px] bg-tomato text-cream grain overflow-hidden shadow-2xl ring-1 ring-ink/10 transition-transform",
-          "rotate-[-2deg] hover:rotate-0",
-          className
-        )}
-      >
+    <section
+      className={cn(
+        "relative rounded-[28px] bg-tomato text-cream grain overflow-hidden",
+        className
+      )}
+    >
       {/* Illustration band */}
       <div className="relative bg-cream-warm">
         <img
@@ -141,7 +139,6 @@ export function ConciergeCard({ className }: Props) {
           </div>
         )}
       </div>
-      </section>
-    </div>
+    </section>
   );
 }

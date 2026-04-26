@@ -113,59 +113,6 @@ export default function ProfilePage() {
         <Stat label="Passes" value={stats.passes} />
       </section>
 
-      {/* Dietary */}
-      <section className="mt-4 rounded-[28px] bg-card border border-border/50 p-6">
-        <div className="font-mono text-[11px] tracking-widest uppercase opacity-60 mb-3">Dietary</div>
-        <div className="flex gap-2 flex-wrap">
-          {DIETARY.map((d) => (
-            <Chip key={d} active={profile.dietary_prefs.includes(d)} onClick={() => toggle("dietary_prefs", d)}>
-              {d}
-            </Chip>
-          ))}
-        </div>
-      </section>
-
-      {/* Favourite cuisines */}
-      <section className="mt-4 rounded-[28px] bg-card border border-border/50 p-6">
-        <div className="font-mono text-[11px] tracking-widest uppercase opacity-60 mb-3">Favourite cuisines</div>
-        <div className="flex gap-2 flex-wrap">
-          {CUISINES.filter((c) => c !== "All cuisines").map((c) => (
-            <Chip key={c} active={profile.fav_cuisines.includes(c)} onClick={() => toggle("fav_cuisines", c)}>
-              {c}
-            </Chip>
-          ))}
-        </div>
-      </section>
-
-      {/* Favourite neighborhoods */}
-      <section className="mt-4 rounded-[28px] bg-card border border-border/50 p-6">
-        <div className="font-mono text-[11px] tracking-widest uppercase opacity-60 mb-3">Favourite neighbourhoods</div>
-        <div className="flex gap-2 flex-wrap">
-          {LONDON_NEIGHBORHOODS.filter((n) => n !== "All cities").map((n) => (
-            <Chip key={n} active={profile.fav_neighborhoods.includes(n)} onClick={() => toggle("fav_neighborhoods", n)}>
-              {n}
-            </Chip>
-          ))}
-        </div>
-      </section>
-
-      {/* Notify radius */}
-      <section className="mt-4 rounded-[28px] bg-card border border-border/50 p-6">
-        <div className="flex items-center justify-between mb-2">
-          <div className="font-mono text-[11px] tracking-widest uppercase opacity-60">Notify radius</div>
-          <span className="font-mono text-xs">{profile.notify_radius_m}m</span>
-        </div>
-        <input
-          type="range"
-          min={200}
-          max={3000}
-          step={100}
-          value={profile.notify_radius_m}
-          onChange={(e) => patch({ notify_radius_m: Number(e.target.value) })}
-          className="w-full accent-foreground"
-        />
-      </section>
-
       <HowItWorksSteps />
 
       <div className="h-6" />

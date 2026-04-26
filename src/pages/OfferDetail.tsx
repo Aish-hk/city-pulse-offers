@@ -86,18 +86,22 @@ export default function OfferDetail() {
           </button>
         </div>
 
-        {photo && (
-          <div className="mx-5 rounded-3xl overflow-hidden">
-            <img src={photo} alt={offer.merchants?.name} className="w-full h-56 object-cover" />
-          </div>
-        )}
-
         <div className="px-5 pt-5">
-          <div className="flex items-center gap-3">
-            <Stamp icon={offer.merchants?.icon_name || categoryIcon(offer.merchants?.category)} tone="bg-foreground text-background" size="lg" />
-            <div>
-              <div className="font-mono text-[11px] tracking-widest uppercase opacity-70">{offer.merchants?.name}</div>
-              <div className="text-[12px] opacity-60 capitalize">
+          <div className="flex items-center gap-4">
+            {photo ? (
+              <span
+                className="inline-block h-16 w-16 overflow-hidden rounded-2xl shadow-lg ring-1 ring-foreground/15 shrink-0"
+                style={{ transform: "rotate(-8deg)" }}
+                aria-hidden
+              >
+                <img src={photo} alt={offer.merchants?.name} className="h-full w-full object-cover" />
+              </span>
+            ) : (
+              <Stamp icon={offer.merchants?.icon_name || categoryIcon(offer.merchants?.category)} tone="bg-foreground text-background" size="lg" />
+            )}
+            <div className="min-w-0">
+              <div className="font-mono text-[11px] tracking-widest uppercase opacity-70 truncate">{offer.merchants?.name}</div>
+              <div className="text-[12px] opacity-60 capitalize truncate">
                 {[offer.merchants?.neighborhood, offer.merchants?.cuisine].filter(Boolean).join(" · ") || offer.merchants?.address}
               </div>
             </div>

@@ -62,7 +62,7 @@ export function HowItWorksSteps() {
             loading="lazy"
             width={512}
             height={512}
-            className="absolute bottom-[2%] left-[18%] h-24 w-24 object-contain pointer-events-none drop-shadow-xl -rotate-[18deg] animate-tap-pulse"
+            className="absolute bottom-[3%] right-[8%] h-20 w-20 object-contain pointer-events-none drop-shadow-xl -rotate-[18deg] animate-tap-pulse"
             style={{ transformOrigin: "80% 80%" }}
           />
         }

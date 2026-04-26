@@ -82,20 +82,6 @@ export function HowItWorksSteps() {
         }
         overlay={
           <>
-            {/* Curvy hand-drawn arrow swooping from phone to card machine */}
-            <svg
-              viewBox="0 0 200 220"
-              className="absolute -right-2 bottom-2 h-[70%] w-[55%] pointer-events-none"
-              fill="none"
-              stroke="hsl(var(--foreground))"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-            >
-              <path d="M30 20 C 120 30, 180 80, 150 160" />
-              <path d="M140 150 L 150 162 L 162 152" />
-            </svg>
             {/* Card machine in pale circle */}
             <div className="absolute -right-3 -bottom-3 h-24 w-24 rounded-full bg-sky/60 ring-4 ring-card flex items-center justify-center shadow-lg">
               <img

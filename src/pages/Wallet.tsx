@@ -1,20 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
-import { CityPulseHeader } from "@/components/CityPulseHeader";
+import { WalletHero } from "@/components/WalletHero";
 import { OfferCard, OfferCardSkeleton, type OfferCardData } from "@/components/OfferCard";
 import { PhoneShell } from "@/components/PhoneShell";
 import { PillButton } from "@/components/PillButton";
+import { FilterBar, DEFAULT_FILTERS, type Filters } from "@/components/FilterBar";
 import { toneFor } from "@/lib/brand";
 import { handleAiResponse } from "@/lib/aiErrors";
-import illusCityScene from "@/assets/illus-city-scene.webp";
-import illusBcnMap from "@/assets/illus-bcn-map.webp";
+import { bootTheme } from "@/lib/theme";
 
-const LOADING_LINES = [
-  "Reading the city…",
-  "Finding what fits…",
-  "Almost there…",
-];
+const LOADING_LINES = ["Reading the city…", "Finding what fits…", "Almost there…"];
 
 export default function Wallet() {
   const sessionId = getSessionId();
@@ -23,6 +19,11 @@ export default function Wallet() {
   const [generating, setGenerating] = useState(false);
   const [ctx, setCtx] = useState<any>(null);
   const [loadingLine, setLoadingLine] = useState(0);
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+
+  useEffect(() => {
+    bootTheme();
+  }, []);
 
   useEffect(() => {
     let i = 0;
@@ -33,16 +34,15 @@ export default function Wallet() {
     return () => clearInterval(t);
   }, []);
 
-  // Initial load: existing live offers + generate new ones in background
   useEffect(() => {
     (async () => {
       const { data } = await supabase
         .from("offers")
-        .select("id, headline, body, cta, discount_pct, urgency_reason, expires_at, merchant_id, merchants(id, name, category, icon_name, address)")
+        .select("id, headline, body, cta, discount_pct, urgency_reason, expires_at, merchant_id, merchants(id, name, category, icon_name, address, photo_url, cuisine, neighborhood)")
         .eq("status", "active")
         .gte("expires_at", new Date().toISOString())
         .order("relevance_score", { ascending: false })
-        .limit(8);
+        .limit(12);
       const mapped: OfferCardData[] = (data || []).map((o: any) => ({
         id: o.id,
         headline: o.headline,
@@ -55,20 +55,22 @@ export default function Wallet() {
       }));
       setOffers(mapped);
       setLoading(false);
-      // Trigger generation for fresh, session-tagged offers
       generateNew();
     })();
 
-    // Realtime: new offers
     const ch = supabase
       .channel("wallet-offers")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "offers" }, async (payload) => {
         const o: any = payload.new;
         if (!o) return;
-        const { data: m } = await supabase.from("merchants").select("id, name, category, icon_name, address").eq("id", o.merchant_id).maybeSingle();
+        const { data: m } = await supabase
+          .from("merchants")
+          .select("id, name, category, icon_name, address, photo_url, cuisine, neighborhood")
+          .eq("id", o.merchant_id)
+          .maybeSingle();
         setOffers((prev) => {
           if (prev.find((x) => x.id === o.id)) return prev;
-          return [{ ...o, merchant: m } as OfferCardData, ...prev].slice(0, 12);
+          return [{ ...o, merchant: m } as OfferCardData, ...prev].slice(0, 16);
         });
       })
       .subscribe();
@@ -93,7 +95,6 @@ export default function Wallet() {
     }
   }
 
-  // Pull a context snapshot if we don't have one yet (so header shows weather)
   useEffect(() => {
     if (ctx) return;
     (async () => {
@@ -107,12 +108,27 @@ export default function Wallet() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const hero = offers[0];
-  const stack = offers.slice(1);
+  // Apply filters client-side
+  const visible = useMemo(() => {
+    return offers.filter((o) => {
+      const m = o.merchant;
+      if (filters.neighborhood !== "All cities" && m?.neighborhood !== filters.neighborhood) return false;
+      if (filters.cuisine !== "All cuisines" && m?.cuisine !== filters.cuisine) return false;
+      if (filters.query) {
+        const q = filters.query.toLowerCase();
+        const hay = `${m?.name || ""} ${m?.cuisine || ""} ${o.headline} ${o.body}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [offers, filters]);
+
+  const hero = visible[0];
+  const stack = visible.slice(1);
 
   return (
     <PhoneShell>
-      <CityPulseHeader
+      <WalletHero
         neighborhood={ctx?.neighborhood || "Bermondsey"}
         tempC={ctx?.temp_c}
         weather={ctx?.weather}
@@ -120,11 +136,12 @@ export default function Wallet() {
         timeLabel={ctx?.time_of_day?.replace("_", " ")}
       />
 
-      {/* Generation status pill */}
+      <FilterBar value={filters} onChange={setFilters} totalCount={offers.length} />
+
       {generating && (
         <div className="mt-4 flex items-center gap-2">
           <span className="live-dot" />
-          <span className="font-mono text-[11px] uppercase tracking-widest text-cream/70">
+          <span className="font-mono text-[11px] uppercase tracking-widest text-foreground/70">
             {LOADING_LINES[loadingLine]}
           </span>
         </div>
@@ -148,46 +165,16 @@ export default function Wallet() {
           <EmptyState onGenerate={generateNew} generating={generating} />
         )}
       </section>
-
-      {/* Footer illustration: editorial sticker */}
-      <section className="mt-10">
-        <div className="relative rounded-[28px] overflow-hidden bg-cream-warm text-ink p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-mono text-[11px] tracking-widest uppercase opacity-60">The neighbourhood</div>
-              <h3 className="font-display text-3xl mt-1 leading-none">A city that nudges, not shouts.</h3>
-            </div>
-          </div>
-          <img src={illusCityScene} alt="Illustration of city life" className="w-full mt-3 mix-blend-multiply" />
-          <div className="mt-2 flex items-center justify-between">
-            <span className="font-mono text-[11px] opacity-70">→ Built for the corner café.</span>
-            <PillButton size="sm" variant="ink" onClick={() => generateNew()}>
-              <i className="ph ph-arrows-clockwise" /> Refresh feed
-            </PillButton>
-          </div>
-        </div>
-
-        <div className="relative rounded-[28px] overflow-hidden mt-4 rotate-tilt-r bg-tomato text-cream p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="font-mono text-[11px] tracking-widest uppercase opacity-80">Concierge</div>
-              <h3 className="font-display text-3xl mt-1 leading-none">Ask the city.</h3>
-              <p className="text-sm opacity-90 mt-2 max-w-[24ch]">"Where can I sit indoors with a flat white in 5 minutes?"</p>
-            </div>
-            <img src={illusBcnMap} alt="" className="w-28 rounded-2xl" />
-          </div>
-        </div>
-      </section>
     </PhoneShell>
   );
 }
 
 function EmptyState({ onGenerate, generating }: { onGenerate: () => void; generating: boolean }) {
   return (
-    <div className="rounded-[28px] bg-ink-2 text-cream p-7 min-h-[300px] flex flex-col justify-between">
+    <div className="rounded-[28px] bg-card p-7 min-h-[300px] flex flex-col justify-between border border-border/50">
       <div>
-        <div className="font-mono text-[11px] uppercase tracking-widest opacity-60">No live offers — yet</div>
-        <h2 className="font-display text-4xl mt-2 leading-[0.95]">The city's quiet. Let's wake it up.</h2>
+        <div className="font-mono text-[11px] uppercase tracking-widest opacity-60">No offers match</div>
+        <h2 className="font-display text-4xl mt-2 leading-[0.95]">Try another neighbourhood.</h2>
       </div>
       <PillButton variant="lime" onClick={onGenerate} disabled={generating}>
         <i className="ph-fill ph-sparkle" /> {generating ? "Reading the city…" : "Generate offers"}

@@ -117,9 +117,9 @@ function Step({
 
 function PhoneFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-[30px] bg-foreground p-[5px] shadow-xl">
-      <div className="rounded-[26px] bg-background overflow-hidden h-[340px] relative">
-        <div className="absolute top-1.5 left-1/2 -translate-x-1/2 h-3.5 w-16 rounded-full bg-foreground z-10" />
+    <div className="rounded-[36px] bg-foreground p-[6px] shadow-xl">
+      <div className="rounded-[30px] bg-background overflow-hidden h-[540px] relative">
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 h-4 w-20 rounded-full bg-foreground z-10" />
         {children}
       </div>
     </div>

@@ -132,33 +132,48 @@ export type Database = {
           brand_voice: string | null
           category: string
           created_at: string | null
+          cuisine: string | null
           icon_name: string | null
           id: string
+          is_independent: boolean | null
           lat: number
           lng: number
           name: string
+          neighborhood: string | null
+          photo_url: string | null
+          price_tier: number | null
         }
         Insert: {
           address?: string | null
           brand_voice?: string | null
           category: string
           created_at?: string | null
+          cuisine?: string | null
           icon_name?: string | null
           id?: string
+          is_independent?: boolean | null
           lat: number
           lng: number
           name: string
+          neighborhood?: string | null
+          photo_url?: string | null
+          price_tier?: number | null
         }
         Update: {
           address?: string | null
           brand_voice?: string | null
           category?: string
           created_at?: string | null
+          cuisine?: string | null
           icon_name?: string | null
           id?: string
+          is_independent?: boolean | null
           lat?: number
           lng?: number
           name?: string
+          neighborhood?: string | null
+          photo_url?: string | null
+          price_tier?: number | null
         }
         Relationships: []
       }
@@ -228,6 +243,42 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          avatar_emoji: string | null
+          created_at: string | null
+          dietary_prefs: string[] | null
+          display_name: string | null
+          fav_cuisines: string[] | null
+          fav_neighborhoods: string[] | null
+          notify_radius_m: number | null
+          session_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_emoji?: string | null
+          created_at?: string | null
+          dietary_prefs?: string[] | null
+          display_name?: string | null
+          fav_cuisines?: string[] | null
+          fav_neighborhoods?: string[] | null
+          notify_radius_m?: number | null
+          session_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_emoji?: string | null
+          created_at?: string | null
+          dietary_prefs?: string[] | null
+          display_name?: string | null
+          fav_cuisines?: string[] | null
+          fav_neighborhoods?: string[] | null
+          notify_radius_m?: number | null
+          session_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       redemptions: {
         Row: {
           id: string
@@ -260,6 +311,27 @@ export type Database = {
           },
         ]
       }
+      saved_offers: {
+        Row: {
+          created_at: string | null
+          id: string
+          offer_id: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          offer_id: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          offer_id?: string
+          session_id?: string
+        }
+        Relationships: []
+      }
       user_sessions: {
         Row: {
           created_at: string | null
@@ -277,6 +349,36 @@ export type Database = {
           created_at?: string | null
           current_lat?: number | null
           current_lng?: number | null
+          session_id?: string
+        }
+        Relationships: []
+      }
+      wallet_passes: {
+        Row: {
+          activated: boolean | null
+          created_at: string | null
+          id: string
+          last_tapped_at: string | null
+          offer_id: string
+          pass_number: string
+          session_id: string
+        }
+        Insert: {
+          activated?: boolean | null
+          created_at?: string | null
+          id?: string
+          last_tapped_at?: string | null
+          offer_id: string
+          pass_number: string
+          session_id: string
+        }
+        Update: {
+          activated?: boolean | null
+          created_at?: string | null
+          id?: string
+          last_tapped_at?: string | null
+          offer_id?: string
+          pass_number?: string
           session_id?: string
         }
         Relationships: []

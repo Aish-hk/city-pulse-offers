@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
 import { toast } from "sonner";
 import { AVATARS } from "@/lib/avatars";
+import { HowItWorksSteps } from "@/components/HowItWorksSteps";
 
 const DIETARY = ["vegan", "vegetarian", "gluten-free", "halal", "no booze"];
 
@@ -164,6 +165,8 @@ export default function ProfilePage() {
           className="w-full accent-foreground"
         />
       </section>
+
+      <HowItWorksSteps />
 
       <div className="h-6" />
     </PhoneShell>

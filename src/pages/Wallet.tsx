@@ -6,6 +6,8 @@ import { OfferCard, OfferCardSkeleton, type OfferCardData } from "@/components/O
 import { PhoneShell } from "@/components/PhoneShell";
 import { PillButton } from "@/components/PillButton";
 import { FilterBar, DEFAULT_FILTERS, type Filters } from "@/components/FilterBar";
+import { CityCrowdCard } from "@/components/CityCrowdCard";
+import { ConciergeCard } from "@/components/ConciergeCard";
 import { toneFor } from "@/lib/brand";
 import { handleAiResponse } from "@/lib/aiErrors";
 import { bootTheme } from "@/lib/theme";
@@ -157,8 +159,17 @@ export default function Wallet() {
         ) : hero ? (
           <>
             <OfferCard offer={hero} hero index={0} />
-            {stack.map((o, i) => (
+            {stack.slice(0, 2).map((o, i) => (
               <OfferCard key={o.id} offer={o} tone={toneFor(i)} index={i + 1} />
+            ))}
+            {/* Editorial break: crowd illustration + concierge */}
+            <CityCrowdCard />
+            {stack.slice(2, 4).map((o, i) => (
+              <OfferCard key={o.id} offer={o} tone={toneFor(i + 2)} index={i + 3} />
+            ))}
+            <ConciergeCard />
+            {stack.slice(4).map((o, i) => (
+              <OfferCard key={o.id} offer={o} tone={toneFor(i + 4)} index={i + 5} />
             ))}
           </>
         ) : (

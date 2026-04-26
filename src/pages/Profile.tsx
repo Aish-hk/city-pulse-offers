@@ -5,11 +5,16 @@ import { getOrCreateProfile, updateProfile, type Profile } from "@/lib/profile";
 import { CUISINES, LONDON_NEIGHBORHOODS } from "@/lib/london";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
-import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { AVATARS } from "@/lib/avatars";
 
-const AVATAR_OPTIONS = ["🌿", "🍵", "🥐", "🍜", "🍷", "🌶️", "🍋", "🌙"];
 const DIETARY = ["vegan", "vegetarian", "gluten-free", "halal", "no booze"];
+
+function avatarIndex(value: string | null | undefined): number {
+  if (!value) return 0;
+  const m = /^av:(\d+)$/.exec(value);
+  return m ? Number(m[1]) % AVATARS.length : 0;
+}
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -61,8 +66,12 @@ export default function ProfilePage() {
       {/* Identity */}
       <section className="rounded-[28px] bg-card border border-border/50 p-6">
         <div className="flex items-center gap-4">
-          <div className="h-16 w-16 rounded-2xl bg-background flex items-center justify-center text-3xl">
-            {profile.avatar_emoji}
+          <div className="h-20 w-20 rounded-2xl bg-background flex items-center justify-center overflow-hidden ring-1 ring-border/60">
+            <img
+              src={AVATARS[avatarIndex(profile.avatar_emoji)]}
+              alt="Your avatar"
+              className="h-full w-full object-cover"
+            />
           </div>
           <input
             type="text"
@@ -74,18 +83,24 @@ export default function ProfilePage() {
           />
         </div>
 
-        <div className="mt-4">
-          <div className="font-mono text-[11px] tracking-widest uppercase opacity-60 mb-2">Avatar</div>
-          <div className="flex gap-2 flex-wrap">
-            {AVATAR_OPTIONS.map((e) => (
-              <button
-                key={e}
-                onClick={() => patch({ avatar_emoji: e })}
-                className={`h-10 w-10 rounded-xl text-xl ${profile.avatar_emoji === e ? "bg-foreground text-background" : "bg-background"}`}
-              >
-                {e}
-              </button>
-            ))}
+        <div className="mt-6">
+          <div className="font-mono text-[11px] tracking-widest uppercase opacity-60 mb-3">Pick your face</div>
+          <div className="grid grid-cols-6 gap-2">
+            {AVATARS.map((src, i) => {
+              const active = avatarIndex(profile.avatar_emoji) === i;
+              return (
+                <button
+                  key={i}
+                  onClick={() => patch({ avatar_emoji: `av:${i}` })}
+                  className={`aspect-square rounded-xl overflow-hidden ring-2 transition-all ${
+                    active ? "ring-foreground scale-105" : "ring-transparent hover:ring-border"
+                  } bg-background`}
+                  aria-label={`Avatar ${i + 1}`}
+                >
+                  <img src={src} alt="" className="h-full w-full object-cover" />
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -150,11 +165,7 @@ export default function ProfilePage() {
         />
       </section>
 
-      <div className="mt-6 text-center">
-        <Link to="/passes" className="font-mono text-[11px] tracking-widest uppercase text-foreground/70">
-          → View Apple Wallet passes
-        </Link>
-      </div>
+      <div className="h-6" />
     </PhoneShell>
   );
 }

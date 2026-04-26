@@ -40,6 +40,33 @@ function timeLeft(expires_at: string): string {
   return `${hrs}h ${mins % 60}m`;
 }
 
+/**
+ * Photo tile that replaces the icon stamp when a merchant photo exists.
+ * Same rotated-square footprint as <Stamp/>, so layout stays consistent.
+ */
+function PhotoTile({
+  src,
+  alt,
+  size = "md",
+  rotate = -6,
+}: {
+  src: string;
+  alt: string;
+  size?: "sm" | "md" | "lg";
+  rotate?: number;
+}) {
+  const dim = size === "lg" ? "h-20 w-20" : size === "sm" ? "h-10 w-10" : "h-14 w-14";
+  return (
+    <span
+      className={cn("inline-block overflow-hidden rounded-2xl shadow-md ring-1 ring-ink/10 shrink-0", dim)}
+      style={{ transform: `rotate(${rotate}deg)` }}
+      aria-hidden
+    >
+      <img src={src} alt={alt} loading="lazy" className="h-full w-full object-cover" />
+    </span>
+  );
+}
+
 export function OfferCard({ offer, tone = "cream", hero = false, index = 0 }: OfferCardProps) {
   const t: CardTone = hero ? "lime" : tone;
   const icon = offer.merchant?.icon_name || categoryIcon(offer.merchant?.category);
@@ -52,81 +79,67 @@ export function OfferCard({ offer, tone = "cream", hero = false, index = 0 }: Of
       className={cn(
         "group relative block w-full overflow-hidden rounded-[28px] grain animate-fade-up",
         TONE_BG[t],
-        hero ? "min-h-[460px]" : "min-h-[280px]"
+        hero ? "min-h-[420px] p-7" : "min-h-[260px] p-6"
       )}
       style={{ animationDelay: `${index * 80}ms` }}
     >
-      {/* Photo cap */}
-      {photo && (
-        <div className={cn("relative w-full overflow-hidden", hero ? "h-56" : "h-40")}>
-          <img
-            src={photo}
-            alt={offer.merchant?.name || "Venue"}
-            loading="lazy"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-tomato text-cream px-3 py-1 font-mono text-[11px] tracking-widest uppercase">
-            −{offer.discount_pct}% off
+      {/* Top row: photo/stamp + merchant + discount */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-4 min-w-0">
+          {photo ? (
+            <PhotoTile src={photo} alt={offer.merchant?.name || "Venue"} size={hero ? "lg" : "md"} />
+          ) : (
+            <Stamp icon={icon} tone={TONE_STAMP[t]} size={hero ? "lg" : "md"} />
+          )}
+          <div className="leading-tight min-w-0">
+            <div className={cn("font-mono text-[11px] tracking-widest uppercase truncate", isDark ? "opacity-70" : "opacity-60")}>
+              {offer.merchant?.name || "Local merchant"}
+            </div>
+            {(offer.merchant?.neighborhood || offer.merchant?.cuisine || offer.merchant?.address) && (
+              <div className={cn("text-[12px] capitalize truncate mt-1", isDark ? "opacity-60" : "opacity-50")}>
+                {[offer.merchant?.neighborhood, offer.merchant?.cuisine].filter(Boolean).join(" · ") ||
+                  offer.merchant?.address}
+              </div>
+            )}
           </div>
         </div>
+
+        <div className="discount-display text-right shrink-0" style={{ fontSize: hero ? 56 : 38, lineHeight: 0.9 }}>
+          −{offer.discount_pct}%
+        </div>
+      </div>
+
+      {/* Headline */}
+      <h2
+        className={cn("font-display leading-[1.05] mt-8 text-balance pr-2")}
+        style={{ fontSize: hero ? 40 : 24 }}
+      >
+        {offer.headline}
+      </h2>
+
+      {/* Body — generous vertical breathing room */}
+      {(hero || offer.body) && (
+        <p className={cn("mt-5 text-[15px] leading-relaxed max-w-[36ch] text-pretty", isDark ? "opacity-80" : "opacity-70")}>
+          {offer.body}
+        </p>
       )}
 
-      <div className={cn(hero ? "p-6" : "p-5", photo && "pt-4")}>
-        {/* Top row: stamp + merchant */}
-        <div className="flex items-start justify-between relative">
-          <div className="flex items-center gap-3">
-            <Stamp icon={icon} tone={TONE_STAMP[t]} size={hero ? "lg" : "md"} />
-            <div className="leading-tight">
-              <div className={cn("font-mono text-[11px] tracking-widest uppercase", isDark ? "opacity-70" : "opacity-60")}>
-                {offer.merchant?.name || "Local merchant"}
-              </div>
-              {(offer.merchant?.neighborhood || offer.merchant?.address) && (
-                <div className={cn("text-[12px] capitalize", isDark ? "opacity-60" : "opacity-50")}>
-                  {[offer.merchant?.neighborhood, offer.merchant?.cuisine].filter(Boolean).join(" · ") ||
-                    offer.merchant?.address}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {!photo && (
-            <div className="discount-display text-right" style={{ fontSize: hero ? 64 : 44 }}>
-              −{offer.discount_pct}%
-            </div>
-          )}
-        </div>
-
-        {/* Headline */}
-        <h2
-          className={cn("font-display leading-[0.95] mt-5 text-balance pr-2")}
-          style={{ fontSize: hero ? 44 : 26 }}
-        >
-          {offer.headline}
-        </h2>
-
-        {hero && (
-          <p className={cn("mt-3 text-[15px] max-w-[34ch] text-pretty", isDark ? "opacity-80" : "opacity-70")}>
-            {offer.body}
-          </p>
-        )}
-
-        {/* Footer */}
-        <div className={cn("mt-6 flex items-end justify-between gap-3")}>
-          <BecausePill className={TONE_BECAUSE[t]}>{offer.urgency_reason}</BecausePill>
-          <div className="flex items-center gap-2">
-            <span className={cn("font-mono text-[11px]", isDark ? "opacity-70" : "opacity-60")}>
-              {timeLeft(offer.expires_at)}
-            </span>
-            <span
-              className={cn(
-                "inline-flex h-9 w-9 items-center justify-center rounded-full transition-transform group-hover:translate-x-0.5",
-                isDark ? "bg-cream/15 text-cream" : "bg-ink text-cream"
-              )}
-              aria-hidden
-            >
-              <i className="ph ph-arrow-up-right text-base" />
-            </span>
-          </div>
+      {/* Footer */}
+      <div className={cn("mt-10 flex items-end justify-between gap-3")}>
+        <BecausePill className={TONE_BECAUSE[t]}>{offer.urgency_reason}</BecausePill>
+        <div className="flex items-center gap-3">
+          <span className={cn("font-mono text-[11px]", isDark ? "opacity-70" : "opacity-60")}>
+            {timeLeft(offer.expires_at)}
+          </span>
+          <span
+            className={cn(
+              "inline-flex h-9 w-9 items-center justify-center rounded-full transition-transform group-hover:translate-x-0.5",
+              isDark ? "bg-cream/15 text-cream" : "bg-ink text-cream"
+            )}
+            aria-hidden
+          >
+            <i className="ph ph-arrow-up-right text-base" />
+          </span>
         </div>
       </div>
     </Link>
@@ -138,7 +151,7 @@ export function OfferCardSkeleton({ hero = false }: { hero?: boolean }) {
     <div
       className={cn(
         "w-full rounded-[28px] bg-muted/60 relative overflow-hidden",
-        hero ? "min-h-[460px]" : "min-h-[280px]"
+        hero ? "min-h-[420px]" : "min-h-[260px]"
       )}
     >
       <div

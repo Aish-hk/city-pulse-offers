@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 const items = [
   { to: "/wallet", icon: "ph-wallet", label: "Wallet" },
-  { to: "/passes", icon: "ph-credit-card", label: "Passes" },
+  { to: "/discover", icon: "ph-compass", label: "Discover" },
   { to: "/profile", icon: "ph-user-circle", label: "Profile" },
   { to: "/merchant/watch-house", icon: "ph-storefront", label: "Merchant" },
 ];

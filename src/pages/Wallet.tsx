@@ -15,6 +15,18 @@ import { bootTheme } from "@/lib/theme";
 
 const LOADING_LINES = ["Reading the city…", "Finding what fits…", "Almost there…"];
 
+function uniqueByMerchant(list: OfferCardData[]) {
+  const seen = new Set<string>();
+
+  return list.filter((offer) => {
+    const merchantKey = offer.merchant?.id || offer.merchant?.name || offer.id;
+
+    if (seen.has(merchantKey)) return false;
+    seen.add(merchantKey);
+    return true;
+  });
+}
+
 export default function Wallet() {
   const sessionId = getSessionId();
   const [offers, setOffers] = useState<OfferCardData[]>([]);
@@ -56,7 +68,7 @@ export default function Wallet() {
         expires_at: o.expires_at,
         merchant: o.merchants,
       }));
-      setOffers(mapped);
+      setOffers(uniqueByMerchant(mapped));
       setLoading(false);
       generateNew();
     })();
@@ -73,7 +85,7 @@ export default function Wallet() {
           .maybeSingle();
         setOffers((prev) => {
           if (prev.find((x) => x.id === o.id)) return prev;
-          return [{ ...o, merchant: m } as OfferCardData, ...prev].slice(0, 16);
+          return uniqueByMerchant([{ ...o, merchant: m } as OfferCardData, ...prev]).slice(0, 16);
         });
       })
       .subscribe();
@@ -113,7 +125,7 @@ export default function Wallet() {
 
   // Apply filters client-side
   const visible = useMemo(() => {
-    return offers.filter((o) => {
+    return uniqueByMerchant(offers).filter((o) => {
       const m = o.merchant;
       if (filters.neighborhood !== "All cities" && m?.neighborhood !== filters.neighborhood) return false;
       if (filters.cuisine !== "All cuisines" && m?.cuisine !== filters.cuisine) return false;

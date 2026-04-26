@@ -8,6 +8,7 @@ import { PillButton } from "@/components/PillButton";
 import { FilterBar, DEFAULT_FILTERS, type Filters } from "@/components/FilterBar";
 import { CityCrowdCard } from "@/components/CityCrowdCard";
 import { ConciergeCard } from "@/components/ConciergeCard";
+import { RefreshCard } from "@/components/RefreshCard";
 import { toneFor } from "@/lib/brand";
 import { handleAiResponse } from "@/lib/aiErrors";
 import { bootTheme } from "@/lib/theme";
@@ -162,11 +163,13 @@ export default function Wallet() {
             {stack.slice(0, 3).map((o, i) => (
               <OfferCard key={o.id} offer={o} tone={toneFor(i)} index={i + 1} />
             ))}
-            {/* Editorial break: crowd illustration */}
-            <CityCrowdCard />
             {stack.slice(3).map((o, i) => (
               <OfferCard key={o.id} offer={o} tone={toneFor(i + 3)} index={i + 4} />
             ))}
+            {/* Refresh tile — pull a new batch */}
+            <RefreshCard onRefresh={generateNew} loading={generating} />
+            {/* The locals — community illustration */}
+            <CityCrowdCard />
             {/* Closing red concierge — the final word */}
             <ConciergeCard />
           </>

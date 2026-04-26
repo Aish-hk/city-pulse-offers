@@ -46,20 +46,6 @@ export default function Index() {
           </Link>
         </section>
 
-        <section className="mt-6 rounded-[24px] bg-ink-2 border border-cream/10 p-5 flex items-center justify-between gap-4">
-          <img src={illusAvatars} alt="" className="h-12 invert opacity-90" />
-          <Link to="/demo" className="font-mono text-[11px] tracking-widest uppercase text-lime">
-            demo controls →
-          </Link>
-        </section>
-
-        <footer className="mt-10 text-center">
-          <PillButton variant="lime">
-            <Link to="/merchant/watch-house" className="flex items-center gap-2">
-              <i className="ph-fill ph-play" /> Start the demo
-            </Link>
-          </PillButton>
-        </footer>
       </div>
     </div>
   );

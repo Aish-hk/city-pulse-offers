@@ -67,12 +67,26 @@ export default function Redeem() {
           <span className="w-10" />
         </div>
 
-        {/* Merchant stamp + headline */}
+        {/* Merchant photo (tilted) + headline */}
         <div className="mt-8 flex items-center gap-4">
-          <Stamp icon={offer.merchants?.icon_name || categoryIcon(offer.merchants?.category)} tone="bg-ink text-lime" size="lg" />
-          <div>
-            <div className="font-mono text-[11px] tracking-widest uppercase opacity-60">{offer.merchants?.name}</div>
-            <h1 className="font-display text-3xl leading-[0.95]">{offer.headline}</h1>
+          {offer.merchants?.photo_url ? (
+            <span
+              className="inline-block h-16 w-16 overflow-hidden rounded-2xl shadow-lg ring-1 ring-ink/15 shrink-0"
+              style={{ transform: "rotate(-8deg)" }}
+              aria-hidden
+            >
+              <img
+                src={offer.merchants.photo_url}
+                alt={offer.merchants?.name}
+                className="h-full w-full object-cover"
+              />
+            </span>
+          ) : (
+            <Stamp icon={offer.merchants?.icon_name || categoryIcon(offer.merchants?.category)} tone="bg-ink text-lime" size="lg" />
+          )}
+          <div className="min-w-0">
+            <div className="font-mono text-[11px] tracking-widest uppercase opacity-60 truncate">{offer.merchants?.name}</div>
+            <h1 className="font-display text-3xl leading-[0.95] mt-1">{offer.headline}</h1>
           </div>
         </div>
 

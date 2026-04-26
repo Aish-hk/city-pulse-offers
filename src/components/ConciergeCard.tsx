@@ -141,5 +141,4 @@ export function ConciergeCard({ className }: Props) {
       </div>
     </section>
   );
-  );
 }

@@ -2,6 +2,7 @@ import tapHand from "@/assets/illus-tap-hand.png";
 import offerDetailMock from "@/assets/mock-offer-detail.png";
 import redeemMock from "@/assets/mock-redeem.png";
 import discoverMock from "@/assets/mock-discover.png";
+import cardMachine from "@/assets/illus-card-machine.png";
 import { ArrowUpRight } from "lucide-react";
 
 /**
@@ -78,6 +79,33 @@ export function HowItWorksSteps() {
             alt="Redeem at counter screen"
             className="absolute inset-0 h-full w-full object-cover object-top"
           />
+        }
+        overlay={
+          <>
+            {/* Curvy hand-drawn arrow swooping from phone to card machine */}
+            <svg
+              viewBox="0 0 200 220"
+              className="absolute -right-2 bottom-2 h-[70%] w-[55%] pointer-events-none"
+              fill="none"
+              stroke="hsl(var(--foreground))"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M30 20 C 120 30, 180 80, 150 160" />
+              <path d="M140 150 L 150 162 L 162 152" />
+            </svg>
+            {/* Card machine in pale circle */}
+            <div className="absolute -right-3 -bottom-3 h-24 w-24 rounded-full bg-sky/60 ring-4 ring-card flex items-center justify-center shadow-lg">
+              <img
+                src={cardMachine}
+                alt=""
+                loading="lazy"
+                className="h-16 w-16 object-contain -rotate-[8deg] drop-shadow-md"
+              />
+            </div>
+          </>
         }
       />
     </section>
